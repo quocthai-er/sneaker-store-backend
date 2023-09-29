@@ -80,6 +80,24 @@ public class UserServiceImpl implements UserService {
         throw new NotFoundException("Can not found user with id " + id );
     }
 
+    @Override
+    public ResponseEntity<?> updatePassword(String id, ChangePasswordRequest changePasswordRequest) {
+        Optional<User> user = userRepository.findUserByIdAndState(id, ConstantsConfig.USER_STATE_ACTIVATED);
+        if (user.isPresent()) {
+            if (!user.get().getProvider().equals(EProvider.LOCAL)) throw new AppException(HttpStatus.BAD_REQUEST.value(), "Your account is " +
+                    user.get().getProvider() + " account");
+            if (passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.get().getPassword())
+                    && !changePasswordRequest.getNewPassword().equals(changePasswordRequest.getOldPassword())) {
+                user.get().setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+                userRepository.save(user.get());
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(true, "Change password success", ""));
+            } else throw new AppException(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Your old password is wrong" +
+                    " or same with new password");
+        }
+        throw new NotFoundException("Can not found user with id " + id + " is activated");
+    }
+
     public void updateUserProcess(UserRequest input, User save) {
         if (input != null) {
             if (!input.getName().isBlank())

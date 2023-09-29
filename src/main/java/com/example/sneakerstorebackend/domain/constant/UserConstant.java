@@ -8,4 +8,7 @@ public class UserConstant {
 
     public static final String API_UPDATE_USER = "/{userId}";
 
+    public static final String API_UPDATE_PASSWORD = "/password/{userId}";
+
+
 }

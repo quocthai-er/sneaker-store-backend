@@ -2,6 +2,7 @@ package com.example.sneakerstorebackend.controllers;
 
 import com.example.sneakerstorebackend.domain.constant.UserConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
+import com.example.sneakerstorebackend.domain.payloads.request.ChangePasswordRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.UserRequest;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
@@ -40,6 +41,16 @@ public class UserController {
         userRequest.setState(null);
         if (user.getId().equals(userId) || !user.getId().isBlank())
             return userService.updateUser(userId, userRequest);
+        throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
+    }
+
+    @PutMapping(UserConstant.API_UPDATE_PASSWORD)
+    public ResponseEntity<?> updatePasswordUser (@Valid @RequestBody ChangePasswordRequest changePasswordRequest,
+                                                 @PathVariable("userId") String userId,
+                                                 HttpServletRequest request){
+        User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
+        if (user.getId().equals(userId) || !user.getId().isBlank())
+            return userService.updatePassword(userId, changePasswordRequest);
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
     }
 }
