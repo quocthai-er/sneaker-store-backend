@@ -8,7 +8,7 @@ public class AuthConstant {
 
     public static final String API_VERIFY = "/verify";
 
-    public static final String API_FORGOT_PASSWORD = "/forgotpassword";
+    public static final String API_FORGOT_PASSWORD = "/reset";
 
     public static final String API_UPDATE_PASSWORD_RESET = "/reset/password/{userId}";
 

@@ -12,16 +12,11 @@ import java.util.Date;
 @Component
 @Slf4j
 public class JwtUtils {
-  /*  @Value("${app.jwt.secret}")
+    @Value("${app.jwt.secret}")
     private String JWT_SECRET;
     @Value("${app.jwt.expired}")
-    private long JWT_EXPIRATION;*/
+    private long JWT_EXPIRATION;
 
-    // Đoạn JWT_SECRET này là bí mật, chỉ có phía server biết
-    private final String JWT_SECRET = "secret";
-
-    //Thời gian có hiệu lực của chuỗi jwt
-    private final long JWT_EXPIRATION = 604800000L;
     private final String JWT_HEADER = "Authorization";
 
     public String getJwtFromHeader(HttpServletRequest request) {
@@ -66,7 +61,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject(String.format("%s,%s", user.getId(), user.getEmail()))
                 .setIssuedAt(new Date())
-                .setIssuer("FashionShop")
+                .setIssuer("SneakerHead Store")
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET.getBytes())
                 .compact();
