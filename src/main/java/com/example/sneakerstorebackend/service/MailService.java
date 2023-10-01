@@ -25,14 +25,11 @@ public class MailService {
     private Configuration configuration;
 
     final String AUTH_TEMPLATE = "auth-template.ftl";
-    final String ORDER_TEMPLATE = "order-template.ftl";
-    final String CANCEL_TEMPLATE = "cancel-template.ftl";
+
     final String FROM_EMAIL = "sneakerheadstore19110284@gmail.com";
 
     final String TYPE_EMAIL = "text/html";
     final String TITLE_EMAIL_AUTH = "Mã xác minh Fashion Store Website";
-    final String TITLE_EMAIL_ORDER = "Xác nhận đơn hàng tại Fashion Store Website";
-    final String TITLE_EMAIL_CANCEL = "Xác nhận đơn hàng bị hủy tại Fashion Store Website";
 
     public void sendEmail(String toEmail,
                           Map<String,Object> model,
