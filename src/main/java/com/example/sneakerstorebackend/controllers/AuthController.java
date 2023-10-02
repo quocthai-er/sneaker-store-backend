@@ -1,6 +1,7 @@
 package com.example.sneakerstorebackend.controllers;
 
 import com.example.sneakerstorebackend.domain.constant.AuthConstant;
+import com.example.sneakerstorebackend.domain.constant.UserConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.payloads.request.*;
 import com.example.sneakerstorebackend.entity.user.User;

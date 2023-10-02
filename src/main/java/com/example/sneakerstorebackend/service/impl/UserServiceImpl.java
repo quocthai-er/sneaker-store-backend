@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent() && user.get().getToken() != null) {
             if (!user.get().getProvider().equals(EProvider.LOCAL)) throw new AppException(HttpStatus.BAD_REQUEST.value(), "Your account is " +
                     user.get().getProvider() + " account");
-            if (ChangeResetPasswordRequest.getOTP().equals(user.get().getToken().getOtp())) {
+            if (ChangeResetPasswordRequest.getTempPassword().equals(user.get().getToken().getOtp())) {
                 user.get().setPassword(passwordEncoder.encode(ChangeResetPasswordRequest.getNewPassword()));
                 user.get().setToken(null);
                 userRepository.save(user.get());

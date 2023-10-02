@@ -1,8 +1,10 @@
 package com.example.sneakerstorebackend.controllers;
 
+import com.example.sneakerstorebackend.domain.constant.AuthConstant;
 import com.example.sneakerstorebackend.domain.constant.UserConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.payloads.request.ChangePasswordRequest;
+import com.example.sneakerstorebackend.domain.payloads.request.ChangeResetPasswordRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.UserRequest;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
@@ -53,4 +55,5 @@ public class UserController {
             return userService.updatePassword(userId, changePasswordRequest);
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
     }
+
 }

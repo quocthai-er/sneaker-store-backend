@@ -9,9 +9,9 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 public class ChangeResetPasswordRequest {
-    @NotBlank(message = "OTP is required")
+    @NotBlank(message = "Temporary Password is required")
     @Size( min = 5, max = 50)
-    private String OTP;
+    private String tempPassword;
     @NotBlank(message = "New Password is required")
     @Size( min = 5, max = 50)
     private String newPassword;
