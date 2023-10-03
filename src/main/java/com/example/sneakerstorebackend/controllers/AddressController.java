@@ -15,20 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RequestMapping(AddressConstant.API_ADDRESS)
 public class AddressController {
-    private final AddressAPIService shippingAPIService;
+    private final AddressAPIService addressAPIService;
 
     @PostMapping(path = "/province", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getProvince () {
-        return shippingAPIService.getProvince();
+        return addressAPIService.getProvince();
     }
 
     @PostMapping(path = "/district", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getDistrict (@RequestBody AddressRequest req) {
-        return shippingAPIService.getDistrict(req.getProvince_id());
+        return addressAPIService.getDistrict(req.getProvince_id());
     }
 
     @PostMapping(path = "/ward", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getWard (@RequestBody AddressRequest req) {
-        return shippingAPIService.getWard(req.getDistrict_id());
+        return addressAPIService.getWard(req.getDistrict_id());
     }
 }
