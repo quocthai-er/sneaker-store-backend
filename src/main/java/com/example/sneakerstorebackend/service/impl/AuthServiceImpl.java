@@ -28,12 +28,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
             if (user.getUser().getProvider().equals(EProvider.LOCAL)) {
                 LoginResponse loginResponse = userMapper.toLoginRes(user.getUser());
-                if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
+/*                if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
                     try {
                         loginResponse.setAccessToken(ConstantsConfig.USER_STATE_UNVERIFIED);
 
@@ -79,9 +77,9 @@ public class AuthServiceImpl implements AuthService {
                 } else {
                     String access_token = jwtUtils.generateTokenFromUserId(user.getUser());
                     loginResponse.setAccessToken(access_token);
-                }
+                }*/
 
-                /*if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
+                if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
                     try {
                         if (loginRequest.getOtp() == null || loginRequest.getOtp().isBlank()) { sendVerifyMail(user.getUser());
                             loginResponse.setAccessToken(ConstantsConfig.USER_STATE_UNVERIFIED);
@@ -95,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
                                     verify = true;
                                 }
                                 return ResponseEntity.status(HttpStatus.OK).body(
-                                        new ResponseObject(verify, "OTP with email: " + loginRequest.getUsername() + " is " + verify, res));
+                                        new ResponseObject(verify, "OTP with email: " + loginRequest.getUsername() + " is " + verify, loginRequest));
                             } else {
                                 user.getUser().setToken(null);
                                 userRepository.save(user.getUser());
@@ -110,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
                 } else {
                     String access_token = jwtUtils.generateTokenFromUserId(user.getUser());
                     loginResponse.setAccessToken(access_token);
-                }*/
+                }
 
                 return ResponseEntity.status(HttpStatus.OK).body(
                         new ResponseObject(true, "Log in successfully ", loginResponse)

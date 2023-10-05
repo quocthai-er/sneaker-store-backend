@@ -13,6 +13,6 @@ public class LoginRequest {
     @NotBlank
     private String password;
 
-    //private String otp;
+    private String otp;
 
 }
