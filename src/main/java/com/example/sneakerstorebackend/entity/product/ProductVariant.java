@@ -12,8 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProductVariant {
     private UUID id;
-    @NotBlank(message = "Color is required")
-    private String color;
+    /*@NotBlank(message = "Color is required")
+    private String color;*/
     @NotBlank(message = "Stock is required")
     private Long stock;
 }

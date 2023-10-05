@@ -66,7 +66,7 @@ public class Product {
     @Indexed
     private List<ProductOption> productOptions;
     private List<ProductImage> images = new ArrayList<>();
-/*    @ReadOnlyProperty
+  /*  @ReadOnlyProperty
     @DocumentReference(lookup="{'product':?#{#self._id} }", lazy = true)
     @Indexed
     private List<Review> reviews;*/
