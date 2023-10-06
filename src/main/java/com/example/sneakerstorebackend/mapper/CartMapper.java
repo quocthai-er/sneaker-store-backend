@@ -2,6 +2,8 @@ package com.example.sneakerstorebackend.mapper;
 
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.payloads.response.CartItemResponse;
+import com.example.sneakerstorebackend.domain.payloads.response.CartResponse;
+import com.example.sneakerstorebackend.entity.order.Order;
 import com.example.sneakerstorebackend.entity.order.OrderItem;
 import com.example.sneakerstorebackend.entity.product.ProductImage;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,5 +34,11 @@ public class CartMapper {
             log.error(e.getMessage());
             throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "get cart item failed");
         }
+    }
+
+    public CartResponse toCartRes (Order order) {
+        CartResponse res = new CartResponse(order.getId(), order.getTotalProduct(), order.getTotalPrice(), order.getState());
+        res.setItems(order.getItems().stream().map(CartMapper::toCartItemRes).collect(Collectors.toList()));
+        return res;
     }
 }

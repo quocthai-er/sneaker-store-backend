@@ -5,6 +5,7 @@ import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
 import com.example.sneakerstorebackend.domain.payloads.request.CartRequest;
 import com.example.sneakerstorebackend.domain.payloads.response.CartItemResponse;
+import com.example.sneakerstorebackend.domain.payloads.response.CartResponse;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
 import com.example.sneakerstorebackend.entity.order.Order;
 import com.example.sneakerstorebackend.entity.order.OrderItem;
@@ -33,6 +34,21 @@ public class CartServiceImpl implements CartService {
     private final OrderRepository orderRepository;
     private final ProductOptionRepository productOptionRepository;
     private final OrderItemRepository orderItemRepository;
+
+    private final CartMapper cartMapper;
+
+    @Override
+    public ResponseEntity<?> getProductFromCart(String userId) {
+        Optional<User> user = userRepository.findUserByIdAndState(userId, ConstantsConfig.USER_STATE_ACTIVATED);
+        if (user.isPresent()) {
+            Optional<Order> order = orderRepository.findOrderByUser_IdAndState(new ObjectId(userId), ConstantsConfig.ORDER_STATE_ENABLE);
+            if (order.isPresent()) {
+                CartResponse res = cartMapper.toCartRes(order.get());
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(true, "Get cart success", res));
+            } throw new NotFoundException("Can not found any order with user id: "+userId);
+        } throw new NotFoundException("Can not found user with id: "+userId);
+    }
 
     @Override
     @Transactional
