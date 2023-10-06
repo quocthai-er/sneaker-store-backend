@@ -16,8 +16,8 @@ import javax.validation.constraints.NotNull;
 public class CartRequest {
     @NotBlank(message = "Product option id is required")
     private String productOptionId;
-    @NotBlank(message = "Color is required")
-    private String color;
+/*    @NotBlank(message = "Color is required")
+    private String color;*/
     @NotNull(message = "Quantity is required")
     private long quantity;
 }

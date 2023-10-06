@@ -59,8 +59,7 @@ public class CartServiceImpl implements CartService {
             if (order.isPresent()) {
                 //Check if order already has product option with color
                 Optional<OrderItem> item = order.get().getItems().stream().filter(
-                        p -> p.getItem().getId().equals(req.getProductOptionId())
-                                && p.getColor().equals(req.getColor())).findFirst();
+                        p -> p.getItem().getId().equals(req.getProductOptionId())).findFirst();
                 if (item.isPresent()) return processUpdateProductInCart(item.get(), req);
                 else return processAddProductToExistOrder(order.get(), req, userId);
             } else return processAddProductToOrder(user.get(), req, userId);
@@ -85,12 +84,12 @@ public class CartServiceImpl implements CartService {
     @Synchronized
     ResponseEntity<?> processAddProductToOrder(User user, CartRequest req, String userId) {
         if (req.getQuantity() <= 0) throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid quantity");
-        Optional<ProductOption> productOption = productOptionRepository.findByIdAndVariantColor(req.getProductOptionId(), req.getColor());
+        Optional<ProductOption> productOption = productOptionRepository.findById(req.getProductOptionId());
         if (productOption.isPresent()) {
             checkProductQuantity(productOption.get(), req);
             Order order = new Order(user, ConstantsConfig.ORDER_STATE_ENABLE);
             orderRepository.insert(order);
-            OrderItem item = new OrderItem(productOption.get(), req.getColor(), req.getQuantity(), order);
+            OrderItem item = new OrderItem(productOption.get(), req.getQuantity(), order);
             orderItemRepository.insert(item);
             CartItemResponse res = CartMapper.toCartItemRes(item);
             /*addScoreToRecommendation(productOption.get().getProduct().getCategory().getId(),
@@ -102,10 +101,10 @@ public class CartServiceImpl implements CartService {
 
     private ResponseEntity<?> processAddProductToExistOrder(Order order, CartRequest req, String userId) {
         if (req.getQuantity() <= 0) throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid quantity");
-        Optional<ProductOption> productOption = productOptionRepository.findByIdAndVariantColor(req.getProductOptionId(), req.getColor());
+        Optional<ProductOption> productOption = productOptionRepository.findById(req.getProductOptionId());
         if (productOption.isPresent()) {
             checkProductQuantity(productOption.get(), req);
-            OrderItem item = new OrderItem(productOption.get(), req.getColor(), req.getQuantity(), order);
+            OrderItem item = new OrderItem(productOption.get(), req.getQuantity(), order);
             orderItemRepository.insert(item);
             CartItemResponse res = CartMapper.toCartItemRes(item);
             /*addScoreToRecommendation(productOption.get().getProduct().getCategory().getId(),
@@ -117,7 +116,7 @@ public class CartServiceImpl implements CartService {
 
     private void checkProductQuantity(ProductOption productOption, CartRequest req) {
         productOption.getVariants().forEach(v -> {
-            if (v.getColor().equals(req.getColor()) && v.getStock() < req.getQuantity()) {
+            if (v.getStock() < req.getQuantity()) {
                 throw new AppException(HttpStatus.CONFLICT.value(), "Quantity exceeds stock on product: "+req.getProductOptionId());
             }
         });
@@ -130,13 +129,11 @@ public class CartServiceImpl implements CartService {
                     new ResponseObject(true, "Delete item "+orderItem.getId()+" in cart success", ""));
         }
         orderItem.getItem().getVariants().forEach(v -> {
-            if (v.getColor().equals(req.getColor())) {
                 long quantity = orderItem.getQuantity() + req.getQuantity();
                 if (v.getStock() >= quantity && quantity > 0) {
                     orderItem.setQuantity(quantity);
                     orderItemRepository.save(orderItem);
                 } else throw new AppException(HttpStatus.CONFLICT.value(), "Quantity invalid or exceeds stock on product: "+req.getProductOptionId());
-            }
         });
         CartItemResponse res = CartMapper.toCartItemRes(orderItem);
         return ResponseEntity.status(HttpStatus.OK).body(

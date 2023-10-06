@@ -9,6 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface ProductOptionRepository extends MongoRepository<ProductOption, String> {
-    @Query(value = "{'id': ?0, 'variants.color': ?1,}")
-    Optional<ProductOption> findByIdAndVariantColor(String id, String variantColor);
+   /* @Query(value = "{'id': ?0, 'variants.color': ?1,}")
+    Optional<ProductOption> findByIdAndVariantColor(String id, String variantColor);*/
+
+    @Query(value = "{'id': ?0,}")
+    Optional<ProductOption> findById(String id);
 }

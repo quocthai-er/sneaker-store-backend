@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class CartMapper {
 
     public static CartItemResponse toCartItemRes(OrderItem orderItem) {
-        Optional<ProductImage> image = Optional.ofNullable(orderItem.getItem().getProduct().getImages().stream().filter(x -> x.isThumbnail() && x.getColor().equals(orderItem.getColor())).findFirst()
+        Optional<ProductImage> image = Optional.ofNullable(orderItem.getItem().getProduct().getImages().stream().filter(x -> x.isThumbnail()).findFirst()
                 .orElse(orderItem.getItem().getProduct().getImages().get(0)));
         BigDecimal price = orderItem.getPrice();
         if (price.equals(BigDecimal.ZERO))
@@ -28,7 +28,7 @@ public class CartMapper {
             return new CartItemResponse(orderItem.getId(), orderItem.getItem().getProduct().getName(),
                     orderItem.getItem().getProduct().getDiscount(),
                     image.get().getUrl(), price,
-                    orderItem.getItem().getId(), orderItem.getColor(), orderItem.getItem().getName(),
+                    orderItem.getItem().getId(), orderItem.getItem().getName(),
                     orderItem.getQuantity(), orderItem.getItem().getVariants().get(0).getStock(), orderItem.getSubPrice());
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -1,5 +1,6 @@
 package com.example.sneakerstorebackend.controllers;
 
+import com.example.sneakerstorebackend.domain.constant.CartConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.payloads.request.CartRequest;
 import com.example.sneakerstorebackend.entity.user.User;
@@ -15,13 +16,13 @@ import javax.validation.Valid;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/cart")
+@RequestMapping(CartConstant.API_CART)
 
 public class CartController {
     private final CartService cartService;
     private final JwtUtils jwtUtils;
 
-    @GetMapping(path = "")
+    @GetMapping(CartConstant.API_GET_CART)
     public ResponseEntity<?> getProductFromCart (HttpServletRequest request){
         User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
         if (!user.getId().isBlank())
@@ -29,7 +30,7 @@ public class CartController {
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
     }
 
-    @PostMapping(path = "")
+    @PostMapping(CartConstant.API_ADD_ITEM_TO_CART)
     public ResponseEntity<?> addAndUpdateProduct (@RequestBody @Valid CartRequest req,
                                                   HttpServletRequest request){
         User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
@@ -38,7 +39,7 @@ public class CartController {
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
     }
 
-    @DeleteMapping(path = "/{orderItemId}")
+    @DeleteMapping(CartConstant.API_DELETE_ITEM_FROM_CART)
     public ResponseEntity<?> deleteProductInCart (@PathVariable("orderItemId") String orderItemId,
                                                   HttpServletRequest request){
         User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
