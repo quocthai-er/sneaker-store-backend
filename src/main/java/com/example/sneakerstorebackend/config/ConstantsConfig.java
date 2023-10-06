@@ -14,4 +14,7 @@ public class ConstantsConfig {
 
     public static final String GHN_URL = "https://dev-online-gateway.ghn.vn/shiip/public-api/";
 
+    public static final String ORDER_STATE_ENABLE = "enable";
+
+
 }
