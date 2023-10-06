@@ -37,4 +37,13 @@ public class CartController {
             return cartService.addAndUpdateProductToCart(user.getId(), req);
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
     }
+
+    @DeleteMapping(path = "/{orderItemId}")
+    public ResponseEntity<?> deleteProductInCart (@PathVariable("orderItemId") String orderItemId,
+                                                  HttpServletRequest request){
+        User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
+        if (!user.getId().isBlank())
+            return cartService.deleteProductFromCart(user.getId(), orderItemId);
+        throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
+    }
 }

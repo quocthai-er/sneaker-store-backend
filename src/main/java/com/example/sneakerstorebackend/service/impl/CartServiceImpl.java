@@ -67,6 +67,20 @@ public class CartServiceImpl implements CartService {
         } throw new NotFoundException("Can not found user with id: "+userId);
     }
 
+    @Override
+    public ResponseEntity<?> deleteProductFromCart(String userId, String orderItemId) {
+        Optional<User> user = userRepository.findUserByIdAndState(userId, ConstantsConfig.USER_STATE_ACTIVATED);
+        if (user.isPresent()) {
+            Optional<OrderItem> orderItem = orderItemRepository.findById(orderItemId);
+            if (orderItem.isPresent() && orderItem.get().getOrder().getUser().getId().equals(userId)){
+                orderItemRepository.deleteById(orderItemId);
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(true, "Delete item "+orderItemId+" in cart success", ""));
+            }
+            else throw new AppException(HttpStatus.NOT_FOUND.value(), "Can not found product in your cart");
+        } throw new NotFoundException("Can not found user with id: "+userId);
+    }
+
     @Transactional
     @Synchronized
     ResponseEntity<?> processAddProductToOrder(User user, CartRequest req, String userId) {

@@ -8,4 +8,7 @@ public interface CartService {
     ResponseEntity<?> getProductFromCart(String userId);
 
     ResponseEntity<?> addAndUpdateProductToCart(String userId, CartRequest req);
+
+    ResponseEntity<?> deleteProductFromCart(String userId, String orderItemId);
+
 }
