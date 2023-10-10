@@ -32,8 +32,8 @@ public class OrderItem {
     @DocumentReference
     @Indexed
     private ProductOption item;
-    @NotBlank
-    private String color;
+/*    @NotBlank
+    private String color;*/
     @NotNull
     private long quantity;
     @DocumentReference(lazy = true)
