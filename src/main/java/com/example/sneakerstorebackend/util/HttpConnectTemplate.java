@@ -22,4 +22,16 @@ public class HttpConnectTemplate {
                 .POST(HttpRequest.BodyPublishers.ofString(body)).build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
+
+    public static HttpResponse<?> connectToGHNAddress(String url, String body, String TOKEN, String SHOP_ID) throws InterruptedException, IOException {
+        HttpClient client = HttpClient.newHttpClient();
+        URI uri = URI.create(ConstantsConfig.GHN_URL_ADDRESS + url) ;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Token", TOKEN)
+                .header("ShopId", SHOP_ID)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body)).build();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 }

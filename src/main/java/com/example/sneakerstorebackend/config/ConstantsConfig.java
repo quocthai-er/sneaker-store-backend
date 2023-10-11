@@ -12,7 +12,7 @@ public class ConstantsConfig {
     public static final String USER_STATE_DEACTIVATED = "deactivated";
     public static final String USER_STATE_UNVERIFIED = "unverified";
 
-    //public static final String GHN_URL = "https://online-gateway.ghn.vn/shiip/public-api/";
+    public static final String GHN_URL_ADDRESS = "https://online-gateway.ghn.vn/shiip/public-api/";
 
     public static final String GHN_URL = "https://dev-online-gateway.ghn.vn/shiip/public-api/";
 

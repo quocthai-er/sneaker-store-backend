@@ -14,14 +14,14 @@ import java.net.http.HttpResponse;
 @Service
 @Slf4j
 public class AddressAPIService {
-    @Value("${app.ghn.token}")
+    @Value("${app.ghn.token_address}")
     private String TOKEN;
-    @Value("${app.ghn.shop}")
+    @Value("${app.ghn.shop_address}")
     private String SHOP_ID;
 
     public ResponseEntity<?> getProvince(){
         try {
-            HttpResponse<?> res = HttpConnectTemplate.connectToGHN("master-data/province","", TOKEN, SHOP_ID);
+            HttpResponse<?> res = HttpConnectTemplate.connectToGHNAddress("master-data/province","", TOKEN, SHOP_ID);
             return ResponseEntity.status(res.statusCode()).body(res.body());
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -33,7 +33,7 @@ public class AddressAPIService {
         try {
             JsonObject body = new JsonObject();
             body.addProperty("province_id", provinceId);
-            HttpResponse<?> res = HttpConnectTemplate.connectToGHN("master-data/district",
+            HttpResponse<?> res = HttpConnectTemplate.connectToGHNAddress("master-data/district",
                     body.toString(), TOKEN, SHOP_ID);
             return ResponseEntity.status(res.statusCode()).body(res.body());
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public class AddressAPIService {
         try {
             JsonObject body = new JsonObject();
             body.addProperty("district_id", districtId);
-            HttpResponse<?> res = HttpConnectTemplate.connectToGHN("master-data/ward?district_id",
+            HttpResponse<?> res = HttpConnectTemplate.connectToGHNAddress("master-data/ward?district_id",
                     body.toString(), TOKEN, SHOP_ID);
             return ResponseEntity.status(res.statusCode()).body(res.body());
         } catch (Exception e) {
