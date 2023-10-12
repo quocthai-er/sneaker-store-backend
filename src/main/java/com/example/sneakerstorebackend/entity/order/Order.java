@@ -1,5 +1,6 @@
 package com.example.sneakerstorebackend.entity.order;
 
+import com.example.sneakerstorebackend.entity.PaymentDetail;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,8 +32,8 @@ public class Order {
     @ReadOnlyProperty
     @DocumentReference(lookup="{'order':?#{#self._id} }", lazy = true)
     private List<OrderItem> items = new ArrayList<>();
-   /* private DeliveryDetail deliveryDetail = new DeliveryDetail();
-    private PaymentDetail paymentDetail = new PaymentDetail();*/
+    private DeliveryDetail deliveryDetail = new DeliveryDetail();
+    private PaymentDetail paymentDetail = new PaymentDetail();
     @NotBlank(message = "State is required")
     private String state;
     @CreatedDate

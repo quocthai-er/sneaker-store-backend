@@ -57,7 +57,6 @@ public class CartServiceImpl implements CartService {
         if (user.isPresent()) {
             Optional<Order> order = orderRepository.findOrderByUser_IdAndState(new ObjectId(userId), ConstantsConfig.ORDER_STATE_ENABLE);
             if (order.isPresent()) {
-                //Check if order already has product option with color
                 Optional<OrderItem> item = order.get().getItems().stream().filter(
                         p -> p.getItem().getId().equals(req.getProductOptionId())).findFirst();
                 if (item.isPresent()) return processUpdateProductInCart(item.get(), req);

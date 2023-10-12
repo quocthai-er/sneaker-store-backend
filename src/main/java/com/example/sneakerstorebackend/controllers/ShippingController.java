@@ -1,5 +1,6 @@
 package com.example.sneakerstorebackend.controllers;
 
+import com.example.sneakerstorebackend.domain.constant.ShippingConstant;
 import com.example.sneakerstorebackend.domain.payloads.request.ShippingRequest;
 import com.example.sneakerstorebackend.service.ShippingAPIService;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/shipping")
+@RequestMapping(ShippingConstant.API_SHIPPING)
 public class ShippingController {
     private final ShippingAPIService shippingAPIService;
 

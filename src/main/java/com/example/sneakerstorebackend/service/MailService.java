@@ -26,10 +26,14 @@ public class MailService {
 
     final String AUTH_TEMPLATE = "auth-template.ftl";
 
+    final String ORDER_TEMPLATE = "order-template.ftl";
+
     final String FROM_EMAIL = "sneakerheadstore19110284@gmail.com";
 
     final String TYPE_EMAIL = "text/html";
-    final String TITLE_EMAIL_AUTH = "Mã xác minh Fashion Store Website";
+    final String TITLE_EMAIL_AUTH = "Mã xác minh SneakerHead Store Website";
+
+    final String TITLE_EMAIL_ORDER = "Xác nhận đơn hàng tại SneakerHead Store Website";
 
     public void sendEmail(String toEmail,
                           Map<String,Object> model,
@@ -42,6 +46,10 @@ public class MailService {
         if (type.equals(EMailType.AUTH)) {
             template = configuration.getTemplate(AUTH_TEMPLATE);
             model.put("title", TITLE_EMAIL_AUTH);
+        }
+        else if (type.equals(EMailType.ORDER)){
+            template = configuration.getTemplate(ORDER_TEMPLATE);
+            model.put("title", TITLE_EMAIL_ORDER);
         }
         model.put("email", toEmail);
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(Objects.requireNonNull(template),model);
