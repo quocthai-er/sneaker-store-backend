@@ -14,4 +14,7 @@ public interface UserService {
 
     ResponseEntity<?> updatePassword(String id, ChangePasswordRequest changePasswordRequest);
 
+    ResponseEntity<?> getUserOrderHistory(String id);
+
+
 }

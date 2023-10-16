@@ -54,4 +54,12 @@ public class UserController {
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
     }
 
+    @GetMapping(UserConstant.API_LIST_HISTORY_ORDER)
+    public ResponseEntity<?> getUserOrderHistory (HttpServletRequest request){
+        User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
+        if (!user.getId().isBlank())
+            return userService.getUserOrderHistory(user.getId());
+        throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
+    }
+
 }

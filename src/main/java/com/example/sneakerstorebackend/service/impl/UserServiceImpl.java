@@ -6,11 +6,14 @@ import com.example.sneakerstorebackend.domain.exception.NotFoundException;
 import com.example.sneakerstorebackend.domain.payloads.request.ChangePasswordRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.ChangeResetPasswordRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.UserRequest;
+import com.example.sneakerstorebackend.domain.payloads.response.OrderResponse;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
 import com.example.sneakerstorebackend.domain.payloads.response.UserResponse;
+import com.example.sneakerstorebackend.entity.order.Order;
 import com.example.sneakerstorebackend.entity.user.EGender;
 import com.example.sneakerstorebackend.entity.user.EProvider;
 import com.example.sneakerstorebackend.entity.user.User;
+import com.example.sneakerstorebackend.mapper.OrderMapper;
 import com.example.sneakerstorebackend.mapper.UserMapper;
 import com.example.sneakerstorebackend.repository.UserRepository;
 import com.example.sneakerstorebackend.service.UserService;
@@ -22,8 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +39,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final OrderMapper orderMapper;
+
 
     @Transactional
     @Override
@@ -97,6 +106,20 @@ public class UserServiceImpl implements UserService {
         }
         throw new NotFoundException("Can not found user with id " + id + " is activated");
     }
+
+    @Override
+    public ResponseEntity<?> getUserOrderHistory(String id) {
+        Optional<User> user = userRepository.findUserByIdAndState(id, ConstantsConfig.USER_STATE_ACTIVATED);
+        if (user.isPresent()) {
+            Comparator<Order> comparatorDesc = Comparator.comparing(Order::getCreatedDate).reversed();
+            List<Order> orders = user.get().getOrders();
+            orders.sort(comparatorDesc);
+            List<OrderResponse> resList = orders.stream().map(orderMapper::toOrderRes).collect(Collectors.toList());
+            if (resList.isEmpty()) throw new NotFoundException("Can not found any orders");
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Get order history of user success", resList));
+        }
+        throw new NotFoundException("Can not found user with id " + id );    }
 
     public void updateUserProcess(UserRequest input, User save) {
         if (input != null) {

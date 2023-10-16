@@ -1,5 +1,6 @@
 package com.example.sneakerstorebackend.entity.user;
 
+import com.example.sneakerstorebackend.entity.order.Order;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -54,13 +55,13 @@ public class User {
     @NotBlank(message = "State is required")
     private String state;
 
-    /*@ReadOnlyProperty
+    @ReadOnlyProperty
     @DocumentReference(lookup="{'user':?#{#self._id} }", lazy = true)
     @JsonIgnore
     @Indexed
     private List<Order> orders;
 
-    @ReadOnlyProperty
+   /* @ReadOnlyProperty
     @DocumentReference(lookup="{'user':?#{#self._id} }", lazy = true)
     @JsonIgnore
     @Indexed
