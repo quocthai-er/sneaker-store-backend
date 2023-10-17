@@ -22,6 +22,7 @@ public class ConstantsConfig {
 
     public static final String ORDER_STATE_PENDING = "pending";
 
+    public static final String ORDER_STATE_CANCEL = "cancel";
 
 
     public static final String PAYMENT_COD = "cod";

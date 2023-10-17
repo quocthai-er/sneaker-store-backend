@@ -20,7 +20,7 @@ public class ShippingAPIService {
     @Value("${app.ghn.shop}")
     private String SHOP_ID;
 
-    public ResponseEntity<?> getDetail(String id) {
+/*    public ResponseEntity<?> getDetail(String id) {
         try {
             JsonObject body = new JsonObject();
             body.addProperty("client_order_code", id);
@@ -31,7 +31,7 @@ public class ShippingAPIService {
             log.error(e.getMessage());
             throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Failed when get detail");
         }
-    }
+    }*/
 
     public ResponseEntity<?> calculateFee(ShippingRequest req) {
         if (req.getWeight() > 30000) req.setWeight(30000L);

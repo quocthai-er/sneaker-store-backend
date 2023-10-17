@@ -7,10 +7,7 @@ import com.example.sneakerstorebackend.service.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,5 +25,12 @@ public class OrderController {
         if (!user.getId().isBlank())
             return orderService.findOrderById(orderId, user.getId());
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
+    }
+
+    @PutMapping(path = "/orders/cancel/{orderId}")
+    public ResponseEntity<?> cancelOrder (@PathVariable String orderId,
+                                          HttpServletRequest request){
+        User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
+        return orderService.cancelOrder(orderId, user.getId());
     }
 }
