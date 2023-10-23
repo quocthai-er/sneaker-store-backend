@@ -12,7 +12,6 @@ public class LoginResponse {
     private String id;
     private String email;
     private String name;
-    private String avatar;
     private EGender gender;
     private String role;
     private String accessToken;

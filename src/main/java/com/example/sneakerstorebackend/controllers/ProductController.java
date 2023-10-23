@@ -3,6 +3,7 @@ package com.example.sneakerstorebackend.controllers;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.constant.ProductConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
+import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
 import com.example.sneakerstorebackend.service.ProductService;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @AllArgsConstructor
@@ -48,5 +50,23 @@ public class ProductController {
         if (query.isEmpty() || query.matches(".*[%<>&;'\0-].*"))
             throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid keyword");
         return productService.search(query, pageable);
+    }
+
+
+    @GetMapping(path = "/manage/products")
+    public ResponseEntity<?> findAll (@RequestParam(value = "state", defaultValue = "") String state,
+                                      @ParameterObject Pageable pageable){
+        return productService.findAll(state,pageable);
+    }
+
+    @PostMapping("/manage/products")
+    public ResponseEntity<?> addProduct(@Valid @RequestBody ProductRequest req) {
+        return productService.addProduct(req);
+    }
+
+    @PutMapping("/manage/products/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable("id") String id,
+                                           @Valid @RequestBody ProductRequest req) {
+        return productService.updateProduct(id, req);
     }
 }

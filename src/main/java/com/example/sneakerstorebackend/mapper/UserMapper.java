@@ -22,7 +22,6 @@ public class UserMapper {
             loginResponse.setId(user.getId());
             loginResponse.setName(user.getName());
             loginResponse.setEmail(user.getEmail());
-            loginResponse.setAvatar(user.getAvatar());
             loginResponse.setRole(user.getRole());
             loginResponse.setGender(user.getGender());
         }
@@ -30,22 +29,21 @@ public class UserMapper {
     }
 
     public UserResponse toUserRes(User user) {
-        UserResponse userResponse = new UserResponse();
+        UserResponse userRes = new UserResponse();
         if (user != null) {
-            userResponse.setId(user.getId());
-            userResponse.setName(user.getName());
-            userResponse.setEmail(user.getEmail());
-            userResponse.setAvatar(user.getAvatar());
-            userResponse.setRole(user.getRole());
-            userResponse.setState(user.getState());
-            userResponse.setGender(user.getGender());
-            userResponse.setPhone(user.getPhone());
-            userResponse.setAddress(user.getAddress());
-            userResponse.setProvince(user.getProvince());
-            userResponse.setDistrict(user.getDistrict());
-            userResponse.setWard(user.getWard());
+            userRes.setId(user.getId());
+            userRes.setName(user.getName());
+            userRes.setEmail(user.getEmail());
+            userRes.setRole(user.getRole());
+            userRes.setState(user.getState());
+            userRes.setGender(user.getGender());
+            userRes.setPhone(user.getPhone());
+            userRes.setAddress(user.getAddress());
+            userRes.setProvince(user.getProvince());
+            userRes.setDistrict(user.getDistrict());
+            userRes.setWard(user.getWard());
         }
-        return userResponse;
+        return userRes;
     }
 
     public User toUser(RegisterRequest registerRequest) {
@@ -60,7 +58,7 @@ public class UserMapper {
             }
             return new User(registerRequest.getName(), registerRequest.getEmail(), registerRequest.getPassword(), registerRequest.getPhone(),
                     registerRequest.getProvince(), registerRequest.getDistrict(), registerRequest.getWard(),
-                    registerRequest.getAddress(), ConstantsConfig.ROLE_USER, null,
+                    registerRequest.getAddress(), ConstantsConfig.ROLE_USER,
                     gender, ConstantsConfig.USER_STATE_UNVERIFIED, EProvider.LOCAL);
         }
         return null;

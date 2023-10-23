@@ -57,7 +57,7 @@ public class Success extends SavedRequestAwareAuthenticationSuccessHandler {
     public String processAddUser(CustomOAuth2User oAuth2User, EProvider provider) {
         User newUser = new User(oAuth2User.getName(), oAuth2User.getEmail(), "",
                 "0907297637", 0, 0, 0, "unknown", ConstantsConfig.ROLE_USER,
-                oAuth2User.getProfilePicture(), EGender.OTHER, ConstantsConfig.USER_STATE_ACTIVATED, provider);
+                EGender.OTHER, ConstantsConfig.USER_STATE_ACTIVATED, provider);
         userRepository.save(newUser);
         String accessToken = jwtUtil.generateTokenFromUserId(newUser);
         LoginResponse loginResponse = userMapper.toLoginRes(newUser);
