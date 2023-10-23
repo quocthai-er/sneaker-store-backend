@@ -13,6 +13,5 @@ public class CategoryRequest {
     @NotBlank(message = "Name is required")
     private String name;
     private String parent_category = "-1";
-    private MultipartFile file;
     private String state;
 }

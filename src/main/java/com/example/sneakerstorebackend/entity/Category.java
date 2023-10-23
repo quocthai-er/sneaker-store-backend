@@ -34,9 +34,8 @@ public class Category {
     private List<Category> subCategories = new ArrayList<>();
 
 
-    public Category(String name, String image, String state) {
+    public Category(String name, String state) {
         this.name = name;
-        this.image = image;
         this.state = state;
     }
 
