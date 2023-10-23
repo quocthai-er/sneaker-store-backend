@@ -7,4 +7,9 @@ public interface BrandService {
     ResponseEntity<?> findAll();
     ResponseEntity<?> findBrandById(String id);
 
+    ResponseEntity<?> addBrand(String name, MultipartFile file);
+
+    ResponseEntity<?> findAll(String state);
+
+    ResponseEntity<?> updateBrand(String id, String name, String state, MultipartFile file);
 }

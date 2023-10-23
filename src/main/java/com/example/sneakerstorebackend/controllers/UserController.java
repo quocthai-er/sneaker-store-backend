@@ -20,9 +20,7 @@ import javax.validation.Valid;
 @RequestMapping(UserConstant.API_USER)
 public class UserController {
     private final JwtUtils jwtUtils;
-
     private final UserService userService;
-
 
     @GetMapping(UserConstant.API_FIND_USER_BY_ID)
     public ResponseEntity<?> findUserById (@PathVariable("userId") String userId,

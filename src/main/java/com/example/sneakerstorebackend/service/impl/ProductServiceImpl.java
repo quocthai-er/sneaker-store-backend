@@ -98,8 +98,7 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products;
         try {
             products = productRepository.findAllBy(TextCriteria
-                            .forDefaultLanguage().matchingAny(key),
-                    pageable);
+                            .forDefaultLanguage().matchingAny(key), pageable);
         } catch (Exception e) {
             throw new NotFoundException("Can not found any product with: "+key);
         }
