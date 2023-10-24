@@ -5,6 +5,7 @@ import com.example.sneakerstorebackend.domain.constant.ProductConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.payloads.request.ImageRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
+import com.example.sneakerstorebackend.entity.product.ProductAttribute;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
 import com.example.sneakerstorebackend.service.ProductService;
@@ -76,5 +77,18 @@ public class ProductController {
     public ResponseEntity<?> addImages(@PathVariable("productId") String id ,
                                        @ModelAttribute ImageRequest req) {
         return productService.addImagesToProduct(id, req.getFiles());
+    }
+
+    @PostMapping("/manage/products/attribute/{productId}")
+    public ResponseEntity<?> addAttribute(@PathVariable("productId") String id ,
+                                          @Valid @RequestBody ProductAttribute req) {
+        return productService.addAttribute(id, req);
+    }
+
+    @PutMapping("/manage/products/attribute/{productId}")
+    public ResponseEntity<?> updateAttribute(@PathVariable("productId") String id,
+                                             @RequestParam ("name") String oldName,
+                                             @Valid @RequestBody ProductAttribute req) {
+        return productService.updateAttribute(id, oldName, req);
     }
 }

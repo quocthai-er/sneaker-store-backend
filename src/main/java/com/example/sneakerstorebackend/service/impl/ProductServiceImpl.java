@@ -11,6 +11,7 @@ import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
 import com.example.sneakerstorebackend.entity.Brand;
 import com.example.sneakerstorebackend.entity.Category;
 import com.example.sneakerstorebackend.entity.product.Product;
+import com.example.sneakerstorebackend.entity.product.ProductAttribute;
 import com.example.sneakerstorebackend.entity.product.ProductImage;
 import com.example.sneakerstorebackend.mapper.ProductMapper;
 import com.example.sneakerstorebackend.repository.BrandRepository;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -186,6 +188,41 @@ public class ProductServiceImpl implements ProductService {
                 throw new NotFoundException("Error when save image: " + e.getMessage());
             }
         } throw new NotFoundException("Can not found product with id: " + id);
+    }
+
+    @Override
+    public ResponseEntity<?> addAttribute(String id, ProductAttribute request) {
+        Optional<Product> product = productRepository.findProductByIdAndState(id, ConstantsConfig.ENABLE);
+        if (product.isPresent()) {
+            if (product.get().getAttr().stream().anyMatch(a -> a.getName().equals(request.getName())))
+                throw new AppException(HttpStatus.CONFLICT.value(), "Attribute name already exists");
+            ProductAttribute attribute = new ProductAttribute(request.getName(), request.getVal());
+            product.get().getAttr().add(attribute);
+            productRepository.save(product.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Add attribute successfully", attribute)
+            );
+        } throw new NotFoundException("Can not found product with id: "+id);
+    }
+
+    @Override
+    public ResponseEntity<?> updateAttribute(String id, String oldName, ProductAttribute request) {
+        Optional<Product> product = productRepository.findProductByIdAndState(id, ConstantsConfig.ENABLE);
+        if (product.isPresent()) {
+            AtomicBoolean existAttr = new AtomicBoolean(false);
+            product.get().getAttr().forEach(a -> {
+                if (a.getName().equals(oldName)) {
+                    existAttr.set(true);
+                    a.setName(request.getName());
+                    a.setVal(request.getVal());
+                }
+            });
+            if (!existAttr.get()) throw new NotFoundException("Can not found attribute " + oldName + " with product id " + id);
+            productRepository.save(product.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Update attribute successfully", request)
+            );
+        } throw new NotFoundException("Can not found product with id: "+id);
     }
 
     public void processUpdate(ProductRequest req, Product product) {
