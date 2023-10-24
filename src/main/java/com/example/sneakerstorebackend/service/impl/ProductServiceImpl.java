@@ -1,18 +1,25 @@
 package com.example.sneakerstorebackend.service.impl;
 
+import com.example.sneakerstorebackend.config.CloudinaryConfig;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
+import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
 import com.example.sneakerstorebackend.domain.payloads.response.ProductListRespone;
 import com.example.sneakerstorebackend.domain.payloads.response.ProductRespone;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
+import com.example.sneakerstorebackend.entity.Brand;
 import com.example.sneakerstorebackend.entity.Category;
 import com.example.sneakerstorebackend.entity.product.Product;
+import com.example.sneakerstorebackend.entity.product.ProductImage;
 import com.example.sneakerstorebackend.mapper.ProductMapper;
+import com.example.sneakerstorebackend.repository.BrandRepository;
 import com.example.sneakerstorebackend.repository.CategoryRepository;
 import com.example.sneakerstorebackend.repository.ProductRepository;
 import com.example.sneakerstorebackend.service.ProductService;
+import com.mongodb.MongoWriteException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,18 +27,26 @@ import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     private final ProductMapper productMapper;
 
     private final CategoryRepository categoryRepository;
+
+    private final BrandRepository brandRepository;
+
+    private final CloudinaryConfig cloudinary;
+
 
     @Override
     public ResponseEntity<?> findAll(String state, Pageable pageable) {
@@ -106,5 +121,98 @@ public class ProductServiceImpl implements ProductService {
         ResponseEntity<?> resp = addPageableToRes(products, resList);
         if (resp != null) return resp;
         throw new NotFoundException("Can not found any product with: "+key);
+    }
+
+    @Override
+    public ResponseEntity<?> addProduct(ProductRequest req) {
+        if (req != null) {
+            Product product = productMapper.toProduct(req);
+            try {
+                productRepository.save(product);
+            } catch (Exception e) {
+                throw new AppException(HttpStatus.CONFLICT.value(), "Product name already exists");
+            }
+            ProductRespone res = productMapper.toProductRes(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    new ResponseObject(true, "Add product successfully ", res)
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(false, "Request is null", "")
+        );
+    }
+
+    @Override
+    public ResponseEntity<?> updateProduct(String id, ProductRequest req) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent() && req != null) {
+            processUpdate(req, product.get());
+            try {
+                productRepository.save(product.get());
+            } catch (MongoWriteException e) {
+                throw new AppException(HttpStatus.CONFLICT.value(), "Product name already exists");
+            } catch (Exception e) {
+                throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), e.getMessage());
+            }
+            ProductRespone res = productMapper.toProductRes(product.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Update product successfully ", res)
+            );
+        }
+        throw new NotFoundException("Can not found product with id: "+id);
+    }
+
+    @Override
+    public ResponseEntity<?> addImagesToProduct(String id, List<MultipartFile> files) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            try {
+                if (files == null || files.isEmpty()) throw new AppException(HttpStatus.BAD_REQUEST.value(), "Images and color is require");
+                files.forEach(f -> {
+                    try {
+                        String url = cloudinary.uploadImage(f, null);
+                        product.get().getImages().add(new ProductImage(UUID.randomUUID().toString(), url, false));
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                        throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Error when upload images");
+                    }
+                    productRepository.save(product.get());
+                });
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(true, "Add image to product successfully", product.get().getImages())
+                );
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                throw new NotFoundException("Error when save image: " + e.getMessage());
+            }
+        } throw new NotFoundException("Can not found product with id: " + id);
+    }
+
+    public void processUpdate(ProductRequest req, Product product) {
+        if (!req.getName().equals(product.getName()))
+            product.setName(req.getName());
+        if (!req.getDescription().equals(product.getDescription()))
+            product.setDescription(req.getDescription());
+        if (!req.getPrice().equals(product.getPrice()))
+            product.setPrice(req.getPrice());
+        if (req.getDiscount() != product.getDiscount())
+            product.setDiscount(req.getDiscount());
+        if (!req.getCategory().equals(product.getCategory().getId())) {
+            Optional<Category> category = categoryRepository.findCategoryByIdAndState(req.getCategory(), ConstantsConfig.ENABLE);
+            if (category.isPresent())
+                product.setCategory(category.get());
+            else throw new NotFoundException("Can not found category with id: "+req.getCategory());
+        }
+        if (!req.getBrand().equals(product.getBrand().getId())) {
+            Optional<Brand> brand = brandRepository.findBrandByIdAndState(req.getBrand(), ConstantsConfig.ENABLE);
+            if (brand.isPresent())
+                product.setBrand(brand.get());
+            else throw new NotFoundException("Can not found brand with id: "+req.getBrand());
+        }
+        if (req.getState() != null && !req.getState().isEmpty() &&
+                (req.getState().equalsIgnoreCase(ConstantsConfig.ENABLE) ||
+                        req.getState().equalsIgnoreCase(ConstantsConfig.DISABLE)))
+            product.setState(req.getState());
+        else throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid state");
     }
 }

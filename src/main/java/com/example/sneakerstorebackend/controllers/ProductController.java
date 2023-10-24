@@ -3,6 +3,7 @@ package com.example.sneakerstorebackend.controllers;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.constant.ProductConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
+import com.example.sneakerstorebackend.domain.payloads.request.ImageRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
@@ -12,6 +13,7 @@ import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,5 +70,11 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(@PathVariable("id") String id,
                                            @Valid @RequestBody ProductRequest req) {
         return productService.updateProduct(id, req);
+    }
+
+    @PostMapping(value = "/manage/products/images/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addImages(@PathVariable("productId") String id ,
+                                       @ModelAttribute ImageRequest req) {
+        return productService.addImagesToProduct(id, req.getFiles());
     }
 }
