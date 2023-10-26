@@ -38,8 +38,8 @@ public class ProductOption {
     @JsonIgnore
     @Indexed
     private Product product;
-    @Transient
-    private Long inStock;
+  /*  @Transient
+    private Long inStock;*/
 
     public ProductOption(String name, BigDecimal extraFee) {
         this.name = name;

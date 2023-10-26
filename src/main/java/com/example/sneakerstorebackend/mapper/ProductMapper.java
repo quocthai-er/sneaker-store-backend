@@ -3,8 +3,8 @@ package com.example.sneakerstorebackend.mapper;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
-import com.example.sneakerstorebackend.domain.payloads.response.ProductListRespone;
-import com.example.sneakerstorebackend.domain.payloads.response.ProductRespone;
+import com.example.sneakerstorebackend.domain.payloads.response.ProductListResponse;
+import com.example.sneakerstorebackend.domain.payloads.response.ProductResponse;
 import com.example.sneakerstorebackend.entity.Brand;
 import com.example.sneakerstorebackend.entity.Category;
 import com.example.sneakerstorebackend.entity.product.Product;
@@ -35,7 +35,7 @@ public class ProductMapper {
                 category.get(), brand.get(), ConstantsConfig.ENABLE, req.getDiscount());
     }
 
-    public ProductListRespone toProductListRes(Product req) {
+    public ProductListResponse toProductListRes(Product req) {
         List<ProductImage> images = new ArrayList<>();
         if (!req.getImages().isEmpty()) {
             images = req.getImages().stream()
@@ -47,17 +47,17 @@ public class ProductMapper {
         String discountString = (req.getPrice().add(extra)).multiply(BigDecimal.valueOf((double) (100- req.getDiscount())/100))
                 .stripTrailingZeros().toPlainString();
         BigDecimal discountPrice = new BigDecimal(discountString);
-        return new ProductListRespone(req.getId(), req.getName(), req.getDescription(),
+        return new ProductListResponse(req.getId(), req.getName(), req.getDescription(),
                 req.getPrice().add(extra),discountPrice, req.getDiscount(), req.getCategory().getId(),
                 req.getCategory().getName(), req.getBrand().getId(),
                 req.getBrand().getName(), req.getState(), req.getCreatedDate(), req.getAttr(), images);
     }
 
-    public ProductRespone toProductRes(Product req) {
+    public ProductResponse toProductRes(Product req) {
         String discountString = req.getPrice().multiply(BigDecimal.valueOf((double) (100- req.getDiscount())/100))
                 .stripTrailingZeros().toPlainString();
         BigDecimal discountPrice = new BigDecimal(discountString);
-        return new ProductRespone(req.getId(), req.getName(), req.getDescription(),
+        return new ProductResponse(req.getId(), req.getName(), req.getDescription(),
                 req.getPrice(),discountPrice, req.getDiscount(),
                 req.getCategory().getId(), req.getCategory().getName(),req.getBrand().getId(),
                 req.getBrand().getName(), req.getState(), req.getAttr(), req.getProductOptions(), req.getImages());

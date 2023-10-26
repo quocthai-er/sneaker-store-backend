@@ -5,8 +5,8 @@ import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
-import com.example.sneakerstorebackend.domain.payloads.response.ProductListRespone;
-import com.example.sneakerstorebackend.domain.payloads.response.ProductRespone;
+import com.example.sneakerstorebackend.domain.payloads.response.ProductListResponse;
+import com.example.sneakerstorebackend.domain.payloads.response.ProductResponse;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
 import com.example.sneakerstorebackend.entity.Brand;
 import com.example.sneakerstorebackend.entity.Category;
@@ -56,13 +56,13 @@ public class ProductServiceImpl implements ProductService {
         if (state.equalsIgnoreCase(ConstantsConfig.ENABLE) || state.equalsIgnoreCase(ConstantsConfig.DISABLE))
             products = productRepository.findAllByState(state.toLowerCase(), pageable);
         else products = productRepository.findAll(pageable);
-        List<ProductListRespone> resList = products.getContent().stream().map(productMapper::toProductListRes).collect(Collectors.toList());
+        List<ProductListResponse> resList = products.getContent().stream().map(productMapper::toProductListRes).collect(Collectors.toList());
         ResponseEntity<?> resp = addPageableToRes(products, resList);
         if (resp != null) return resp;
         throw new NotFoundException("Can not found any product");
     }
 
-    private ResponseEntity<?> addPageableToRes(Page<Product> products, List<ProductListRespone> resList) {
+    private ResponseEntity<?> addPageableToRes(Page<Product> products, List<ProductListResponse> resList) {
         Map<String, Object> resp = new HashMap<>();
         resp.put("list", resList);
         resp.put("totalQuantity", products.getTotalElements());
@@ -77,13 +77,7 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<?> findById(String id, String userId) {
         Optional<Product> product = productRepository.findProductByIdAndState(id, ConstantsConfig.ENABLE);
         if (product.isPresent()) {
-            ProductRespone res = productMapper.toProductRes(product.get());
-           /* recommendCheckUtils.setCatId(res.getCategory());
-            recommendCheckUtils.setBrandId(res.getBrand());
-            recommendCheckUtils.setType(ConstantsConfig.VIEW_TYPE);
-            recommendCheckUtils.setUserId(userId);
-            recommendCheckUtils.setUserRepository(userRepository);
-            taskScheduler.schedule(recommendCheckUtils, new Date(System.currentTimeMillis()));*/
+            ProductResponse res = productMapper.toProductRes(product.get());
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(true, "Get product success", res));
         }
@@ -104,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception e) {
             throw new AppException(HttpStatus.BAD_REQUEST.value(), "Error when finding");
         }
-        List<ProductListRespone> resList = products.stream().map(productMapper::toProductListRes).collect(Collectors.toList());
+        List<ProductListResponse> resList = products.stream().map(productMapper::toProductListRes).collect(Collectors.toList());
         ResponseEntity<?> resp = addPageableToRes(products, resList);
         if (resp != null) return resp;
         throw new NotFoundException("Can not found any product with category or brand id: "+id);
@@ -119,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception e) {
             throw new NotFoundException("Can not found any product with: "+key);
         }
-        List<ProductListRespone> resList = products.getContent().stream().map(productMapper::toProductListRes).collect(Collectors.toList());
+        List<ProductListResponse> resList = products.getContent().stream().map(productMapper::toProductListRes).collect(Collectors.toList());
         ResponseEntity<?> resp = addPageableToRes(products, resList);
         if (resp != null) return resp;
         throw new NotFoundException("Can not found any product with: "+key);
@@ -134,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
             } catch (Exception e) {
                 throw new AppException(HttpStatus.CONFLICT.value(), "Product name already exists");
             }
-            ProductRespone res = productMapper.toProductRes(product);
+            ProductResponse res = productMapper.toProductRes(product);
             return ResponseEntity.status(HttpStatus.CREATED).body(
                     new ResponseObject(true, "Add product successfully ", res)
             );
@@ -156,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
             } catch (Exception e) {
                 throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), e.getMessage());
             }
-            ProductRespone res = productMapper.toProductRes(product.get());
+            ProductResponse res = productMapper.toProductRes(product.get());
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(true, "Update product successfully ", res)
             );
