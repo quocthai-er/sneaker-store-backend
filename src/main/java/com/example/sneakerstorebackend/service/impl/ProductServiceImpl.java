@@ -4,6 +4,7 @@ import com.example.sneakerstorebackend.config.CloudinaryConfig;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
+import com.example.sneakerstorebackend.domain.payloads.request.ProductPriceAndDiscount;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
 import com.example.sneakerstorebackend.domain.payloads.response.ProductListResponse;
 import com.example.sneakerstorebackend.domain.payloads.response.ProductResponse;
@@ -217,6 +218,48 @@ public class ProductServiceImpl implements ProductService {
                     new ResponseObject(true, "Update attribute successfully", request)
             );
         } throw new NotFoundException("Can not found product with id: "+id);
+    }
+
+    @Override
+    public ResponseEntity<?> updateMultiplePriceAndDiscount(ProductPriceAndDiscount request) {
+        List<Product> products = productRepository.findAllByIdIsIn(List.of(request.getId().split(",")));
+        if (products.isEmpty()) throw new NotFoundException("Can not found any product with id: " + request.getId());
+        else {
+            products.stream().forEach(p -> {
+                if (request.getPrice() != null && !request.getPrice().equals(p.getPrice()))
+                    p.setPrice(request.getPrice());
+                if (request.getDiscount() != -1 && request.getDiscount() != p.getDiscount())
+                    p.setDiscount(request.getDiscount());
+            });
+            try {
+                productRepository.saveAll(products);
+            } catch (Exception e) {
+                throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Update product price and discount successfully ", request)
+            );
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> updatePriceAndDiscount(ProductPriceAndDiscount request) {
+        Optional<Product> product = productRepository.findById(request.getId());
+        if (product.isPresent()) {
+            if (request.getPrice() != null && !request.getPrice().equals(product.get().getPrice()))
+                product.get().setPrice(request.getPrice());
+            if (request.getDiscount() != -1 && request.getDiscount() != product.get().getDiscount())
+                product.get().setDiscount(request.getDiscount());
+            try {
+                productRepository.save(product.get());
+            } catch (Exception e) {
+                throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Update product price and discount successfully ", request)
+            );
+        }
+        throw new NotFoundException("Can not found product with id: "+ request.getId());
     }
 
     public void processUpdate(ProductRequest req, Product product) {

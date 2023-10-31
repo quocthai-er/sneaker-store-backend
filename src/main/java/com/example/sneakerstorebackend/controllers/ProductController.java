@@ -4,6 +4,7 @@ import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.constant.ProductConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.payloads.request.ImageRequest;
+import com.example.sneakerstorebackend.domain.payloads.request.ProductPriceAndDiscount;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
 import com.example.sneakerstorebackend.entity.product.ProductAttribute;
 import com.example.sneakerstorebackend.entity.user.User;
@@ -90,5 +91,11 @@ public class ProductController {
                                              @RequestParam ("name") String oldName,
                                              @Valid @RequestBody ProductAttribute req) {
         return productService.updateAttribute(id, oldName, req);
+    }
+
+    @PutMapping("/manage/products/price")
+    public ResponseEntity<?> updatePriceAndDiscount(@Valid @RequestBody ProductPriceAndDiscount request) {
+        if (request.getId().contains(",")) return productService.updateMultiplePriceAndDiscount(request);
+        else return productService.updatePriceAndDiscount(request);
     }
 }

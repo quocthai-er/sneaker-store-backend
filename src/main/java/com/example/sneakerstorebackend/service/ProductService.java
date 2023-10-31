@@ -1,5 +1,6 @@
 package com.example.sneakerstorebackend.service;
 
+import com.example.sneakerstorebackend.domain.payloads.request.ProductPriceAndDiscount;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductRequest;
 import com.example.sneakerstorebackend.entity.product.ProductAttribute;
 import org.springframework.data.domain.Pageable;
@@ -20,5 +21,9 @@ public interface ProductService {
     ResponseEntity<?> addAttribute(String id, ProductAttribute request);
 
     ResponseEntity<?> updateAttribute(String id, String oldName, ProductAttribute request);
+
+    ResponseEntity<?> updateMultiplePriceAndDiscount(ProductPriceAndDiscount request);
+
+    ResponseEntity<?> updatePriceAndDiscount(ProductPriceAndDiscount request);
 
 }
