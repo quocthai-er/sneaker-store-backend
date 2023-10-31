@@ -53,6 +53,33 @@ public class ProductOptionServiceImpl implements ProductOptionService {
                     new ResponseObject(true, "Add product option success", option.get()));
         }
     }
+
+    @Override
+    public ResponseEntity<?> updateOptionVariant(String id, String variantColor, ProductOptionRequest req) {
+        Optional<ProductOption> productOption = productOptionRepository.findByIdAndVariantColor(id, variantColor);
+        if (productOption.isPresent()) {
+            productOption.get().setName(req.getName());
+            productOption.get().setExtraFee(req.getExtraFee());
+            productOption.get().getVariants().forEach(variant -> {
+                if (variant.getColor().equals(variantColor)) {
+                    variant.setStock(req.getStock());
+                    if (!variant.getColor().equals(req.getColor())) {
+                        variant.setColor(req.getColor());
+                    }
+                }
+            });
+            try {
+                productOptionRepository.save(productOption.get());
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(true, "Update product option success", productOption.get()));
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Error when update option");
+            }
+
+        } throw new NotFoundException("Can not found product option with id: "+id);
+    }
+
     public void processVariant (ProductOption productOption ,String color,
                                 Long stock) {
         ProductVariant variants = new ProductVariant(UUID.randomUUID(), color, stock);
