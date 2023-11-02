@@ -19,16 +19,15 @@ import com.example.sneakerstorebackend.repository.UserRepository;
 import com.example.sneakerstorebackend.service.UserService;
 import com.example.sneakerstorebackend.util.StringUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,6 +119,25 @@ public class UserServiceImpl implements UserService {
                     new ResponseObject(true, "Get order history of user success", resList));
         }
         throw new NotFoundException("Can not found user with id " + id );    }
+
+    @Override
+    public ResponseEntity<?> findAll(String state, Pageable pageable) {
+        Page<User> users;
+        if (state.equalsIgnoreCase(ConstantsConfig.USER_STATE_ACTIVATED) ||
+                state.equalsIgnoreCase(ConstantsConfig.USER_STATE_DEACTIVATED) ||
+                state.equalsIgnoreCase(ConstantsConfig.USER_STATE_UNVERIFIED))
+            users = userRepository.findAllByState(state.toLowerCase(), pageable);
+        else users = userRepository.findAll(pageable);
+        List<UserResponse> userResList = users.stream().map(userMapper::toUserRes).collect(Collectors.toList());
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("list", userResList);
+        resp.put("totalQuantity", users.getTotalElements());
+        resp.put("totalPage", users.getTotalPages());
+        if (userResList.size() > 0)
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Get all user success", resp));
+        throw new NotFoundException("Can not found any user");
+    }
 
     public void updateUserProcess(UserRequest input, User save) {
         if (input != null) {

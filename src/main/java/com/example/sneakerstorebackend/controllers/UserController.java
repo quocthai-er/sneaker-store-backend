@@ -8,6 +8,9 @@ import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
 import com.example.sneakerstorebackend.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +61,12 @@ public class UserController {
         if (!user.getId().isBlank())
             return userService.getUserOrderHistory(user.getId());
         throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
+    }
+
+    @GetMapping(path = "/admin/manage/users")
+    public ResponseEntity<?> findAll (@RequestParam(value = "state", defaultValue = "") String state,
+                                      @PageableDefault(size = 5, sort = "name") @ParameterObject Pageable pageable){
+        return userService.findAll(state, pageable);
     }
 
 }
