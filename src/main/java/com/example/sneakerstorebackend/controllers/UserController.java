@@ -3,6 +3,7 @@ package com.example.sneakerstorebackend.controllers;
 import com.example.sneakerstorebackend.domain.constant.UserConstant;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.payloads.request.ChangePasswordRequest;
+import com.example.sneakerstorebackend.domain.payloads.request.RegisterRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.UserRequest;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
@@ -69,4 +70,14 @@ public class UserController {
         return userService.findAll(state, pageable);
     }
 
+    @PostMapping(path = "/admin/manage/users")
+    public ResponseEntity<?> addUser (@Valid @RequestBody RegisterRequest req){
+        return userService.addUser(req);
+    }
+
+    @PutMapping(path = "/admin/manage/users/{userId}")
+    public ResponseEntity<?> updateUserAdmin (@Valid @RequestBody UserRequest req,
+                                              @PathVariable("userId") String userId) {
+        return userService.updateUser(userId, req);
+    }
 }

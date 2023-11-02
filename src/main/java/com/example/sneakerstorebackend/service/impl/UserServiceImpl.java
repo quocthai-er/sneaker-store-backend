@@ -5,6 +5,7 @@ import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
 import com.example.sneakerstorebackend.domain.payloads.request.ChangePasswordRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.ChangeResetPasswordRequest;
+import com.example.sneakerstorebackend.domain.payloads.request.RegisterRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.UserRequest;
 import com.example.sneakerstorebackend.domain.payloads.response.OrderResponse;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
@@ -137,6 +138,29 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(true, "Get all user success", resp));
         throw new NotFoundException("Can not found any user");
+    }
+
+    @Override
+    public ResponseEntity<?> addUser(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail()))
+            throw new AppException(HttpStatus.CONFLICT.value(), "Email already exists");
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        User user = userMapper.toUser(request);
+        if (user != null) {
+            if (request.getRole().toUpperCase(Locale.ROOT).equals(ConstantsConfig.ROLE_STAFF) ||
+                    request.getRole().toUpperCase(Locale.ROOT).equals(ConstantsConfig.ROLE_USER))
+                user.setRole(request.getRole().toUpperCase());
+            else throw new NotFoundException("Can not found role: "+ request.getRole());
+            user.setState(ConstantsConfig.USER_STATE_ACTIVATED);
+            try {
+                userRepository.insert(user);
+            } catch (Exception e){
+                throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), e.getMessage());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new ResponseObject(true, "Add user successfully ", "")
+        );
     }
 
     public void updateUserProcess(UserRequest input, User save) {

@@ -69,9 +69,9 @@ public class User {
     @JsonIgnore
     private Token token;
 
-    @JsonIgnore
+  /*  @JsonIgnore
     @Indexed
-    private Map<Object, Integer> recommendRanking = new HashMap<>();
+    private Map<Object, Integer> recommendRanking = new HashMap<>();*/
     @CreatedDate
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     LocalDateTime createdDate;
