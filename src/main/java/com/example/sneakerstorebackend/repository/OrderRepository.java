@@ -22,4 +22,7 @@ public interface OrderRepository extends MongoRepository<Order, String> {
 
     Page<Order> findAllByState(String state, Pageable pageable);
 
+    Optional<Order> findOrderByIdAndUser_Id(String orderId, ObjectId userId);
+
+
 }
