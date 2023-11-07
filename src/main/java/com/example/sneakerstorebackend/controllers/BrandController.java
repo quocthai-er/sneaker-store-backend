@@ -52,4 +52,9 @@ public class BrandController {
         return brandService.updateBrand(id, name, state, file);
     }
 
+    @DeleteMapping(path = "/admin/manage/brands/{id}")
+    public ResponseEntity<?> deleteBrand (@PathVariable("id") String id){
+        return brandService.deactivatedBrand(id);
+    }
+
 }

@@ -103,4 +103,17 @@ public class BrandServiceImpl implements BrandService {
         }
         throw new NotFoundException("Can not found brand with id: " + id);
     }
+
+    @Override
+    public ResponseEntity<?> deactivatedBrand(String id) {
+        Optional<Brand> brand = brandRepository.findBrandByIdAndState(id, ConstantsConfig.ENABLE);
+        if (brand.isPresent()) {
+            if (!brand.get().getProducts().isEmpty()) throw new AppException(HttpStatus.CONFLICT.value(),
+                    "There's a product belongs to that brand.");
+            brand.get().setState(ConstantsConfig.DISABLE);
+            brandRepository.save(brand.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "delete brand success with id: "+id,""));
+        } else throw new NotFoundException("Can not found brand with id: " + id);
+    }
 }

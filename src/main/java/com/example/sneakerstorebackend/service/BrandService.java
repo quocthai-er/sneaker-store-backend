@@ -12,4 +12,7 @@ public interface BrandService {
     ResponseEntity<?> findAll(String state);
 
     ResponseEntity<?> updateBrand(String id, String name, String state, MultipartFile file);
+
+    ResponseEntity<?> deactivatedBrand(String id);
+
 }
