@@ -49,6 +49,9 @@ public class User {
     private String address;
     @NotBlank(message = "Role is required")
     private String role;
+
+    private String avatar;
+
     private EGender gender;
     private EProvider provider;
     @NotBlank(message = "State is required")
@@ -89,6 +92,22 @@ public class User {
         this.ward = ward;
         this.address = address;
         this.role = role;
+        this.gender = gender;
+        this.state = state;
+        this.provider = provider;
+    }
+
+    public User(String name, String email, String password, String phone, Integer province, Integer district, Integer ward, String address, String role, String avatar, EGender gender, String state, EProvider provider) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.province = province;
+        this.district = district;
+        this.ward = ward;
+        this.address = address;
+        this.role = role;
+        this.avatar = avatar;
         this.gender = gender;
         this.state = state;
         this.provider = provider;

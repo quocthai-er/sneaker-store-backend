@@ -22,6 +22,7 @@ public class UserMapper {
             loginResponse.setId(user.getId());
             loginResponse.setName(user.getName());
             loginResponse.setEmail(user.getEmail());
+            loginResponse.setAvatar(user.getAvatar());
             loginResponse.setRole(user.getRole());
             loginResponse.setGender(user.getGender());
         }
@@ -34,6 +35,7 @@ public class UserMapper {
             userRes.setId(user.getId());
             userRes.setName(user.getName());
             userRes.setEmail(user.getEmail());
+            userRes.setAvatar(user.getAvatar());
             userRes.setRole(user.getRole());
             userRes.setState(user.getState());
             userRes.setGender(user.getGender());

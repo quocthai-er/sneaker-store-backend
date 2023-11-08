@@ -8,6 +8,7 @@ public class UserResponse {
     private String id;
     private String email;
     private String name;
+    private String avatar;
     private String phone;
     private Integer province;
     private Integer district;

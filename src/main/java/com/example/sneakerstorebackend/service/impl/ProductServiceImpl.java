@@ -262,6 +262,17 @@ public class ProductServiceImpl implements ProductService {
         throw new NotFoundException("Can not found product with id: "+ request.getId());
     }
 
+    @Override
+    public ResponseEntity<?> deleteAttribute(String id, String name) {
+        Optional<Product> product = productRepository.findProductByIdAndState(id, ConstantsConfig.ENABLE);
+        if (product.isPresent() && !name.isBlank()) {
+            product.get().getAttr().removeIf(a -> a.getName().equals(name));
+            productRepository.save(product.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Delete attribute successfully", "")
+            );
+        } throw new NotFoundException("Can not found product with id: "+id);    }
+
     public void processUpdate(ProductRequest req, Product product) {
         if (!req.getName().equals(product.getName()))
             product.setName(req.getName());

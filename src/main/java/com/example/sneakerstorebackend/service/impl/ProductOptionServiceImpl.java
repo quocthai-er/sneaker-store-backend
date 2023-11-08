@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -78,6 +79,24 @@ public class ProductOptionServiceImpl implements ProductOptionService {
             }
 
         } throw new NotFoundException("Can not found product option with id: "+id);
+    }
+
+    @Override
+    public ResponseEntity<?> findOptionById(String id) {
+        Optional<ProductOption> productOption = productOptionRepository.findById(id);
+        if (productOption.isPresent())
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Get product option success", productOption.get()));
+        throw new NotFoundException("Can not found product option with id: "+id);
+    }
+
+    @Override
+    public ResponseEntity<?> findOptionByProductId(String id) {
+        List<ProductOption> productOptions = productOptionRepository.findAllByProduct_Id(new ObjectId(id));
+        if (productOptions.size() > 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Get product option success", productOptions));
+        } throw new NotFoundException("Can not found any product option with id: "+id);
     }
 
     public void processVariant (ProductOption productOption ,String color,

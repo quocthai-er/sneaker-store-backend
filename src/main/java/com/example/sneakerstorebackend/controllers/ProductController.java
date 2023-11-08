@@ -34,7 +34,6 @@ public class ProductController {
         return productService.findAll(ConstantsConfig.ENABLE, pageable);
     }
 
-
     @GetMapping(ProductConstant.API_FIND_BY_ID)
     public ResponseEntity<?> findById (@PathVariable("id") String id, HttpServletRequest request){
         User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
@@ -55,7 +54,6 @@ public class ProductController {
             throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid keyword");
         return productService.search(query, pageable);
     }
-
 
     @GetMapping(path = "/manage/products")
     public ResponseEntity<?> findAll (@RequestParam(value = "state", defaultValue = "") String state,
@@ -91,6 +89,12 @@ public class ProductController {
                                              @RequestParam ("name") String oldName,
                                              @Valid @RequestBody ProductAttribute req) {
         return productService.updateAttribute(id, oldName, req);
+    }
+
+    @DeleteMapping("/manage/products/attribute/{productId}")
+    public ResponseEntity<?> deleteAttribute(@PathVariable("productId") String id,
+                                             @RequestBody ProductAttribute req) {
+        return productService.deleteAttribute(id, req.getName());
     }
 
     @PutMapping("/manage/products/price")

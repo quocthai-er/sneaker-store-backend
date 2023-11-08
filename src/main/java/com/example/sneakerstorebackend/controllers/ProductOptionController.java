@@ -29,4 +29,14 @@ public class ProductOptionController {
         return productOptionService.updateOptionVariant(id, variantColor, req);
     }
 
+    @GetMapping("/products/option")
+    public ResponseEntity<?> findOptionByProductId(@RequestParam("productId") String id) {
+        return productOptionService.findOptionByProductId(id);
+    }
+
+    @GetMapping("/products/option/{id}")
+    public ResponseEntity<?> getOptionById(@PathVariable("id") String id) {
+        return productOptionService.findOptionById(id);
+    }
+
 }

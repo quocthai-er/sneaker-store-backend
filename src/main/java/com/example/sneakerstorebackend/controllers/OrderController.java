@@ -61,4 +61,5 @@ public class OrderController {
         User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
         return orderService.changeState(ConstantsConfig.ORDER_STATE_DONE, orderId, user.getId());
     }
+
 }

@@ -26,4 +26,6 @@ public interface ProductService {
 
     ResponseEntity<?> updatePriceAndDiscount(ProductPriceAndDiscount request);
 
+    ResponseEntity<?> deleteAttribute(String id, String name);
+
 }

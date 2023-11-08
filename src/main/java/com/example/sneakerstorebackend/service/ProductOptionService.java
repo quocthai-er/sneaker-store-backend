@@ -8,5 +8,7 @@ public interface ProductOptionService {
 
     ResponseEntity<?> updateOptionVariant(String id, String variantColor, ProductOptionRequest req);
 
+    ResponseEntity<?> findOptionById(String id);
+    ResponseEntity<?> findOptionByProductId(String id);
 }
 

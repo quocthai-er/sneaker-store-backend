@@ -14,9 +14,9 @@ import java.net.http.HttpResponse;
 @Service
 @Slf4j
 public class AddressAPIService {
-    @Value("${app.ghn.token_address}")
+    @Value("${app.ghn.token}")
     private String TOKEN;
-    @Value("${app.ghn.shop_address}")
+    @Value("${app.ghn.shop}")
     private String SHOP_ID;
 
     public ResponseEntity<?> getProvince(){
