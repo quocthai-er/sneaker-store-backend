@@ -14,6 +14,6 @@ public class ProductImage {
     private String imageId;
     private String url;
     private boolean thumbnail;
-   /* private String color;*/
+    private String color;
 
 }

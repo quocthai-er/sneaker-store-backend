@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class ImageRequest {
-
+    String color;
     String imageId;
     List<MultipartFile> files;
 }

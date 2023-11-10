@@ -4,6 +4,7 @@ import com.example.sneakerstorebackend.domain.payloads.request.ProductOptionRequ
 import com.example.sneakerstorebackend.service.ProductOptionService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +16,9 @@ import javax.validation.Valid;
 public class ProductOptionController {
     private ProductOptionService productOptionService;
 
-    @PostMapping(value = "/manage/products/option/{productId}")
+    @PostMapping(value = "/manage/products/option/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addOption(@PathVariable("productId") String id,
-                                       @RequestBody @Valid ProductOptionRequest req) {
+                                       @Valid @ModelAttribute ProductOptionRequest req) {
         return productOptionService.addOption(id, req);
     }
 

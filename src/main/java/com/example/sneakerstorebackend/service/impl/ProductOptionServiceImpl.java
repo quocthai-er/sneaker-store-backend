@@ -1,11 +1,13 @@
 package com.example.sneakerstorebackend.service.impl;
 
+import com.example.sneakerstorebackend.config.CloudinaryConfig;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
 import com.example.sneakerstorebackend.domain.payloads.request.ProductOptionRequest;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
 import com.example.sneakerstorebackend.entity.product.Product;
+import com.example.sneakerstorebackend.entity.product.ProductImage;
 import com.example.sneakerstorebackend.entity.product.ProductOption;
 import com.example.sneakerstorebackend.entity.product.ProductVariant;
 import com.example.sneakerstorebackend.repository.ProductOptionRepository;
@@ -18,10 +20,13 @@ import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +34,9 @@ import java.util.UUID;
 public class ProductOptionServiceImpl implements ProductOptionService {
     private final ProductRepository productRepository;
     private final ProductOptionRepository productOptionRepository;
+
+    private final CloudinaryConfig cloudinary;
+
     @Override
     public ResponseEntity<?> addOption(String productId, ProductOptionRequest req) {
         Optional<ProductOption> checkOption = productOptionRepository.findByNameAndVariantsColorAndProductId(
@@ -45,11 +53,11 @@ public class ProductOptionServiceImpl implements ProductOptionService {
         if (option.isEmpty()) {
             ProductOption productOption = new ProductOption(req.getName(), req.getExtraFee());
             productOption.setProduct(product.get());
-            processVariant(productOption, req.getColor(), req.getStock());
+            processVariant(productOption, req.getColor(), req.getImages(), req.getStock(), product.get());
             return ResponseEntity.status(HttpStatus.CREATED).body(
                     new ResponseObject(true, "Add product option success", productOption));
         } else {
-            processVariant(option.get(), req.getColor(), req.getStock());
+            processVariant(option.get(), req.getColor(), req.getImages(), req.getStock(), product.get());
             return ResponseEntity.status(HttpStatus.CREATED).body(
                     new ResponseObject(true, "Add product option success", option.get()));
         }
@@ -99,8 +107,11 @@ public class ProductOptionServiceImpl implements ProductOptionService {
         } throw new NotFoundException("Can not found any product option with id: "+id);
     }
 
-    public void processVariant (ProductOption productOption ,String color,
-                                Long stock) {
+    public void processVariant (ProductOption productOption ,String color, List<MultipartFile> files,
+                                Long stock, Product product) {
+        List<ProductImage> images = product.getImages()
+                .stream().filter(i -> i.getColor().equals(color)).collect(Collectors.toList());
+        if (images.isEmpty()) processUploadImage(files, color, product);
         ProductVariant variants = new ProductVariant(UUID.randomUUID(), color, stock);
         productOption.getVariants().add(variants);
         try {
@@ -111,4 +122,19 @@ public class ProductOptionServiceImpl implements ProductOptionService {
         }
     }
 
+    public void processUploadImage (List<MultipartFile> images, String color, Product product) {
+        if (images == null || images.isEmpty())
+            throw new AppException(HttpStatus.BAD_REQUEST.value(), "images is empty");
+        for (int i = 0; i < images.size(); i++) {
+            try {
+                String url = cloudinary.uploadImage(images.get(i), null);
+                if (i == 0) product.getImages().add(new ProductImage(UUID.randomUUID().toString(), url, true, color));
+                else product.getImages().add(new ProductImage(UUID.randomUUID().toString(), url, false, color));
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Error when upload images");
+            }
+            productRepository.save(product);
+        }
+    }
 }

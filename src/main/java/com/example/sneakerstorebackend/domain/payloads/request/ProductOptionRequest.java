@@ -1,11 +1,13 @@
 package com.example.sneakerstorebackend.domain.payloads.request;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class ProductOptionRequest {
@@ -18,4 +20,6 @@ public class ProductOptionRequest {
     private String color;
     @NotNull(message = "Extra fee is required")
     private BigDecimal extraFee = BigDecimal.ZERO;
+    private List<MultipartFile> images;
+
 }

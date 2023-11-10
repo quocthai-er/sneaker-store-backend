@@ -160,15 +160,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<?> addImagesToProduct(String id, List<MultipartFile> files) {
+    public ResponseEntity<?> addImagesToProduct(String id, String color, List<MultipartFile> files) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
             try {
-                if (files == null || files.isEmpty()) throw new AppException(HttpStatus.BAD_REQUEST.value(), "Images and color is require");
+                if (files == null || files.isEmpty() || color.isEmpty()) throw new AppException(HttpStatus.BAD_REQUEST.value(), "Images and color is require");
                 files.forEach(f -> {
                     try {
                         String url = cloudinary.uploadImage(f, null);
-                        product.get().getImages().add(new ProductImage(UUID.randomUUID().toString(), url, false));
+                        product.get().getImages().add(new ProductImage(UUID.randomUUID().toString(), url, false, color));
                     } catch (IOException e) {
                         log.error(e.getMessage());
                         throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Error when upload images");

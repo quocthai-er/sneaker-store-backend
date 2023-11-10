@@ -16,7 +16,7 @@ public interface ProductService {
     ResponseEntity<?> search(String key, Pageable pageable);
     ResponseEntity<?> addProduct(ProductRequest request);
     ResponseEntity<?> updateProduct(String id, ProductRequest request);
-    ResponseEntity<?> addImagesToProduct(String id, List<MultipartFile> files);
+    ResponseEntity<?> addImagesToProduct(String id, String color, List<MultipartFile> files);
 
     ResponseEntity<?> addAttribute(String id, ProductAttribute request);
 

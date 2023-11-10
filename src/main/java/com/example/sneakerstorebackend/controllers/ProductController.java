@@ -75,7 +75,7 @@ public class ProductController {
     @PostMapping(value = "/manage/products/images/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addImages(@PathVariable("productId") String id ,
                                        @ModelAttribute ImageRequest req) {
-        return productService.addImagesToProduct(id, req.getFiles());
+        return productService.addImagesToProduct(id, req.getColor(), req.getFiles());
     }
 
     @PostMapping("/manage/products/attribute/{productId}")

@@ -15,7 +15,7 @@ public class CartItemResponse {
     private String image;
     private BigDecimal price;
     private String productOptionId;
-   /* private String color;*/
+   private String color;
     private String size;
     private long quantity;
     private long stock;

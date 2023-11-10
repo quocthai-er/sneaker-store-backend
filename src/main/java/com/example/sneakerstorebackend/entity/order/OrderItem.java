@@ -32,8 +32,8 @@ public class OrderItem {
     @DocumentReference
     @Indexed
     private ProductOption item;
-/*    @NotBlank
-    private String color;*/
+    @NotBlank
+    private String color;
     @NotNull
     private long quantity;
     @DocumentReference(lazy = true)
@@ -46,11 +46,11 @@ public class OrderItem {
     @Transient
     private BigDecimal subPrice = BigDecimal.ZERO;
 
-  /*  public ProductOption getItem() {
+    public ProductOption getItem() {
         item.setVariants(item.getVariants().stream()
                 .filter(v -> v.getColor().equals(color)).collect(Collectors.toList()));
         return item;
-    }*/
+    }
 
     public BigDecimal getSubPrice() {
         if (order.getState().equals(ConstantsConfig.ORDER_STATE_ENABLE)) {
@@ -61,8 +61,9 @@ public class OrderItem {
         } else return price.multiply(BigDecimal.valueOf(quantity));
     }
 
-    public OrderItem(ProductOption item, long quantity, Order order) {
+    public OrderItem(ProductOption item, String color, long quantity, Order order) {
         this.item = item;
+        this.color = color;
         this.quantity = quantity;
         this.order = order;
     }
