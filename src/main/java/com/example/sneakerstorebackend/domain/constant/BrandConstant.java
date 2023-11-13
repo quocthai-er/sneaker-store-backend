@@ -8,5 +8,4 @@ public class BrandConstant {
 
     public static final String API_FIND_BRAND_BY_ID = "/brands/{id}";
 
-
 }

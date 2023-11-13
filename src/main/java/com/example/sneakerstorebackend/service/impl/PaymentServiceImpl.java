@@ -7,6 +7,7 @@ import com.example.sneakerstorebackend.domain.payloads.request.CheckoutRequest;
 import com.example.sneakerstorebackend.entity.PaymentDetail;
 import com.example.sneakerstorebackend.entity.order.DeliveryDetail;
 import com.example.sneakerstorebackend.entity.order.Order;
+import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.repository.OrderItemRepository;
 import com.example.sneakerstorebackend.repository.OrderRepository;
 import com.example.sneakerstorebackend.repository.UserRepository;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -87,5 +89,29 @@ public class PaymentServiceImpl implements PaymentService {
         }
         PaymentFactory paymentFactory = getPaymentMethod(paymentType);
         return paymentFactory.createPayment(request, order.get());
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> executePayment(String paymentId, String payerId, String responseCode, String id, HttpServletRequest request, HttpServletResponse response) {
+        if (paymentId != null && payerId != null ) {
+            PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_PAYPAL);
+            return paymentFactory.executePayment(paymentId, payerId, null,null, request, response);
+        } else if (responseCode != null) {
+            PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_VNPAY);
+            return paymentFactory.executePayment(null, null, responseCode, id, request, response);
+        } else {
+            checkRoleForCODPayment(request);
+            PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_COD);
+            return paymentFactory.executePayment(paymentId, null, null,null, request, response);
+        }
+    }
+
+    private void checkRoleForCODPayment(HttpServletRequest request) {
+        String userId = jwtTokenUtil.getUserFromJWT(jwtTokenUtil.getJwtFromHeader(request)).getId();
+        Optional<User> user = userRepository.findUserByIdAndState(userId, ConstantsConfig.USER_STATE_ACTIVATED);
+        if (user.isEmpty() ||
+                !(user.get().getRole().equals(ConstantsConfig.ROLE_ADMIN) || user.get().getRole().equals(ConstantsConfig.ROLE_STAFF)))
+            throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission!");
     }
 }

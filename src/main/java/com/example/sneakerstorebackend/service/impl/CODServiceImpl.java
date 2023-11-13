@@ -16,8 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class CODServiceImpl extends PaymentFactory {
@@ -43,5 +46,16 @@ public class CODServiceImpl extends PaymentFactory {
                         new ResponseObject(true, " Pay by COD successfully", ""));
             }
         } throw new NotFoundException("Can not found order with id: "+ Objects.requireNonNull(order).getId());
+    }
+
+    @Override
+    public ResponseEntity<?> executePayment(String paymentId, String payerId, String responseCode, String id, HttpServletRequest request, HttpServletResponse response) {
+        Optional<Order> order = orderRepository.findById(paymentId);
+        if (order.isPresent() && order.get().getState().equals(ConstantsConfig.ORDER_STATE_PENDING)) {
+            order.get().setState(ConstantsConfig.ORDER_STATE_PREPARE);
+            orderRepository.save(order.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Confirmed order successfully", ""));
+        } else throw new NotFoundException("Can not found order with id: "+ paymentId);
     }
 }
