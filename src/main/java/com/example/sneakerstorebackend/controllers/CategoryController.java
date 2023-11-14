@@ -43,4 +43,8 @@ public class CategoryController {
                                              @RequestBody @Valid CategoryRequest req){
         return categoryService.updateCategory(id, req);
 }
+    @DeleteMapping(path = "/admin/manage/categories/{id}")
+    public ResponseEntity<?> deleteCategory (@PathVariable("id") String id){
+        return categoryService.deactivatedCategory(id);
+    }
 }

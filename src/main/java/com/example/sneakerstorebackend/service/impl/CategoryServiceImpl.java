@@ -98,4 +98,19 @@ public class CategoryServiceImpl implements CategoryService {
         throw new NotFoundException("Can not found any category");
     }
 
+    @Override
+    public ResponseEntity<?> deactivatedCategory(String id) {
+        Optional<Category> category = categoryRepository.findById(id);
+        if (category.isPresent()) {
+            if (!category.get().getProducts().isEmpty()) throw new AppException(HttpStatus.CONFLICT.value(),
+                    "There's a product belongs to that category.");
+            category.get().setState(ConstantsConfig.DISABLE);
+            category.get().getSubCategories().forEach(c -> c.setState(ConstantsConfig.DISABLE));
+            categoryRepository.saveAll(category.get().getSubCategories());
+            categoryRepository.save(category.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Deactivated category success", id));
+        } else throw new NotFoundException("Can not found category with id: " + id);
+    }
+
 }

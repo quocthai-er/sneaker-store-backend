@@ -1,5 +1,6 @@
 package com.example.sneakerstorebackend.entity;
 
+import com.example.sneakerstorebackend.entity.product.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +33,12 @@ public class Category {
     @DocumentReference
     @Indexed
     private List<Category> subCategories = new ArrayList<>();
+
+    @ReadOnlyProperty
+    @DocumentReference(lookup="{'category':?#{#self._id} }", lazy = true)
+    @JsonIgnore
+    @Indexed
+    private List<Product> products;
 
 
     public Category(String name, String state) {
