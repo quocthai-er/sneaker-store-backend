@@ -83,6 +83,12 @@ public class ProductController {
         return productService.addImagesToProduct(id, req.getColor(), req.getFiles());
     }
 
+    @DeleteMapping("/manage/products/images/{productId}")
+    public ResponseEntity<?> deleteImage(@PathVariable("productId") String id,
+                                         @RequestBody ImageRequest req) {
+        return productService.deleteImageFromProduct(id, req.getImageId());
+    }
+
     @PostMapping("/manage/products/attribute/{productId}")
     public ResponseEntity<?> addAttribute(@PathVariable("productId") String id ,
                                           @Valid @RequestBody ProductAttribute req) {

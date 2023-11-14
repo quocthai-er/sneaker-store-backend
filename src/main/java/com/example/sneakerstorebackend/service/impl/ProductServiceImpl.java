@@ -284,6 +284,27 @@ public class ProductServiceImpl implements ProductService {
             );
         } throw new NotFoundException("Can not found product with id: "+id);    }
 
+    @Override
+    public ResponseEntity<?> deleteImageFromProduct(String id, String imageId) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent() && !product.get().getImages().isEmpty()) {
+            try {
+                Optional<ProductImage> checkDelete = product.get().getImages().stream().filter(i -> i.getImageId().equals(imageId)).findFirst();
+                if (checkDelete.isPresent()) {
+                    cloudinary.deleteImage(checkDelete.get().getUrl());
+                    product.get().getImages().remove(checkDelete.get());
+                    productRepository.save(product.get());
+                    return ResponseEntity.status(HttpStatus.OK).body(
+                            new ResponseObject(true, "Delete image successfully", imageId)
+                    );
+                } else throw new NotFoundException("Can not found image in product with id: " + imageId);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                throw new NotFoundException("Can not found product with id: " + id);
+            }
+        } throw new NotFoundException("Can not found any image or product with id: " + id);
+    }
+
     public void processUpdate(ProductRequest req, Product product) {
         if (!req.getName().equals(product.getName()))
             product.setName(req.getName());

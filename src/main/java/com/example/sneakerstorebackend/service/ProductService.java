@@ -31,4 +31,7 @@ public interface ProductService {
 
     ResponseEntity<?> deleteAttribute(String id, String name);
 
+    ResponseEntity<?> deleteImageFromProduct(String id, String imageId);
+
+
 }
