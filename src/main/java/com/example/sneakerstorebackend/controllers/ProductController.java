@@ -72,6 +72,10 @@ public class ProductController {
         return productService.updateProduct(id, req);
     }
 
+    @DeleteMapping("/manage/products/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
+        return productService.deactivatedProduct(id);
+    }
 
     @PostMapping(value = "/manage/products/images/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addImages(@PathVariable("productId") String id ,

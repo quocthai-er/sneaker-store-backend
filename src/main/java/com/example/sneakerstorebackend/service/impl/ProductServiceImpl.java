@@ -160,6 +160,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResponseEntity<?> deactivatedProduct(String id) {
+        Optional<Product> product = productRepository.findProductByIdAndState(id, ConstantsConfig.ENABLE);
+        if (product.isPresent()) {
+            product.get().setState(ConstantsConfig.DISABLE);
+            productRepository.save(product.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Delete product successfully ", "")
+            );
+        } throw new NotFoundException("Can not found product with id: "+id);    }
+
+    @Override
     public ResponseEntity<?> addImagesToProduct(String id, String color, List<MultipartFile> files) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
