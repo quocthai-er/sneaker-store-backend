@@ -1,8 +1,11 @@
 package com.example.sneakerstorebackend.service;
 
 import com.example.sneakerstorebackend.domain.exception.AppException;
+import com.example.sneakerstorebackend.domain.payloads.request.CreateShippingRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.ShippingRequest;
+import com.example.sneakerstorebackend.entity.order.Order;
 import com.example.sneakerstorebackend.util.HttpConnectTemplate;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,5 +88,54 @@ public class ShippingAPIService {
             log.error(e.getMessage());
             throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Failed when get service");
         }
+    }
+
+    public HttpResponse<?> create(CreateShippingRequest req, Order order) {
+        try {
+            JsonObject body = new JsonObject();
+            processAddProperties(body, order, req);
+            HttpResponse<?> res = HttpConnectTemplate.connectToGHN("v2/shipping-order/create",
+                    body.toString(), TOKEN, SHOP_ID);
+            if (res.statusCode() == HttpStatus.OK.value()) {
+                return res;
+            } else {
+                throw new AppException(res.statusCode(), res.body().toString());
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Failed when create shipping order");
+        }
+    }
+
+    private void processAddProperties (JsonObject body, Order order, CreateShippingRequest req) {
+        long weight = order.getTotalProduct()*30L;
+        long height = order.getTotalProduct();
+        if (weight > 30000) weight = 30000;
+        if (height > 150) height = 150;
+        JsonArray items = new JsonArray();
+        req.getItems().forEach(i -> {
+            JsonObject object = new JsonObject();
+            object.addProperty("name", i.getName());
+            object.addProperty("quantity", i.getQuantity());
+            items.add(object);
+        });
+        body.add("items", items);
+        body.addProperty("payment_type_id", 2);
+        body.addProperty("service_type_id", (int) order.getDeliveryDetail().getDeliveryInfo().get("serviceType"));
+        body.addProperty("required_note", "CHOXEMHANGKHONGTHU");
+        body.addProperty("content", "Đơn hàng được mua tại SneakerHead Store");
+        body.addProperty("client_order_code", order.getId());
+        body.addProperty("length",100);
+        body.addProperty("width",50);
+        body.addProperty("height",height);
+        body.addProperty("weight",weight);
+        body.addProperty("to_name", order.getDeliveryDetail().getReceiveName());
+        body.addProperty("to_phone", order.getDeliveryDetail().getReceivePhone());
+        body.addProperty("to_address", order.getDeliveryDetail().getReceiveAddress());
+        body.addProperty("cod_amount", order.getTotalPrice().intValue());
+        body.addProperty("to_province_name", req.getTo_province_name());
+        body.addProperty("to_district_name", req.getTo_district_name());
+        body.addProperty("to_ward_name", req.getTo_ward_name());
+        body.addProperty("to_ward_code", order.getDeliveryDetail().getReceiveWard());
     }
 }

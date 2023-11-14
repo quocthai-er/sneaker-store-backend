@@ -3,20 +3,24 @@ package com.example.sneakerstorebackend.service.impl;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
+import com.example.sneakerstorebackend.domain.payloads.request.CreateShippingRequest;
 import com.example.sneakerstorebackend.domain.payloads.response.OrderResponse;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
 import com.example.sneakerstorebackend.entity.order.Order;
 import com.example.sneakerstorebackend.mapper.OrderMapper;
 import com.example.sneakerstorebackend.repository.OrderRepository;
 import com.example.sneakerstorebackend.service.OrderService;
+import com.example.sneakerstorebackend.service.ShippingAPIService;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
+import org.cloudinary.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpResponse;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -33,6 +37,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     private PaymentUtils paymentUtils;
+
+    private final ShippingAPIService shippingAPIService;
+
 
     @Override
     public ResponseEntity<?> findOrderById(String id, String userId) {
@@ -88,6 +95,22 @@ public class OrderServiceImpl implements OrderService {
         resp.put("totalPage", orders.getTotalPages());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(true, "Get orders success", resp));
+    }
+
+    @Override
+    public ResponseEntity<?> createShip(CreateShippingRequest req, String orderId) {
+        Optional<Order> order = orderRepository.findOrderByIdAndState(orderId, ConstantsConfig.ORDER_STATE_PREPARE);
+        if (order.isPresent()) {
+            order.get().setState(ConstantsConfig.ORDER_STATE_DELIVERY);
+            HttpResponse<?> response = shippingAPIService.create(req, order.get());
+            JSONObject objectRes = new JSONObject(response.body().toString()).getJSONObject("data");
+            order.get().getDeliveryDetail().getDeliveryInfo().put("orderCode", objectRes.getString("order_code"));
+            order.get().getDeliveryDetail().getDeliveryInfo().put("fee", objectRes.getLong("total_fee"));
+            order.get().getDeliveryDetail().getDeliveryInfo().put("expectedDeliveryTime", objectRes.getString("expected_delivery_time"));
+            orderRepository.save(order.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Create shipping order successfully", order.get().getDeliveryDetail().getDeliveryInfo()));
+        } else throw new NotFoundException("Can not found order with id: " + orderId + " is prepare");
     }
 
     @Override

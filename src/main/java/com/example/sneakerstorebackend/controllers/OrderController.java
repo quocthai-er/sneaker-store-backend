@@ -2,6 +2,7 @@ package com.example.sneakerstorebackend.controllers;
 
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.AppException;
+import com.example.sneakerstorebackend.domain.payloads.request.CreateShippingRequest;
 import com.example.sneakerstorebackend.entity.user.User;
 import com.example.sneakerstorebackend.security.jwt.JwtUtils;
 import com.example.sneakerstorebackend.service.OrderService;
@@ -47,6 +48,12 @@ public class OrderController {
     @GetMapping(path = "/manage/orders/{orderId}")
     public ResponseEntity<?> findOrderById (@PathVariable String orderId) {
         return orderService.findOrderById(orderId);
+    }
+
+    @PostMapping(path = "/manage/orders/ship/{orderId}")
+    public ResponseEntity<?> createShipOrder (@RequestBody CreateShippingRequest req,
+                                              @PathVariable String orderId){
+        return orderService.createShip(req, orderId);
     }
 
     @PutMapping(path = "/manage/orders/{state}/{orderId}")
