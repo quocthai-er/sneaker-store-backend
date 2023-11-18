@@ -1,5 +1,6 @@
 package com.example.sneakerstorebackend.service.impl;
 
+import com.example.sneakerstorebackend.config.CloudinaryConfig;
 import com.example.sneakerstorebackend.config.ConstantsConfig;
 import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
@@ -27,7 +28,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryConfig cloudinary;
 
     private final OrderMapper orderMapper;
 
@@ -161,6 +165,26 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseObject(true, "Add user successfully ", "")
         );
+    }
+
+    @Override
+    public ResponseEntity<?> updateUserAvatar(String id, MultipartFile file) {
+        Optional<User> user = userRepository.findUserByIdAndState(id, ConstantsConfig.USER_STATE_ACTIVATED);
+        if (user.isPresent()) {
+            if (file != null && !file.isEmpty()) {
+                try {
+                    String imgUrl = cloudinary.uploadImage(file, user.get().getAvatar());
+                    user.get().setAvatar(imgUrl);
+                    userRepository.save(user.get());
+                } catch (IOException e) {
+                    throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Error when upload image");
+                }
+            }
+            UserResponse res = userMapper.toUserRes(user.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(true, "Update user success", res));
+        }
+        throw new NotFoundException("Can not found user with id " + id );
     }
 
     public void updateUserProcess(UserRequest input, User save) {

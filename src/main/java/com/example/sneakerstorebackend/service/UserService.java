@@ -6,6 +6,7 @@ import com.example.sneakerstorebackend.domain.payloads.request.RegisterRequest;
 import com.example.sneakerstorebackend.domain.payloads.request.UserRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     ResponseEntity<?> updatePasswordReset(String id, ChangeResetPasswordRequest changeResetPasswordRequest);
@@ -21,5 +22,7 @@ public interface UserService {
     ResponseEntity<?> findAll(String state, Pageable pageable);
 
     ResponseEntity<?> addUser(RegisterRequest request);
+
+    ResponseEntity<?> updateUserAvatar(String id, MultipartFile file);
 
 }

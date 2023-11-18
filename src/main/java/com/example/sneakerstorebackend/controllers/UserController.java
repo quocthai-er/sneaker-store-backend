@@ -15,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -79,6 +80,16 @@ public class UserController {
     public ResponseEntity<?> updateUserAdmin (@Valid @RequestBody UserRequest req,
                                               @PathVariable("userId") String userId) {
         return userService.updateUser(userId, req);
+    }
+
+    @PostMapping(path = "/users/avatar/{userId}")
+    public ResponseEntity<?> updateUser (@PathVariable("userId") String userId,
+                                         HttpServletRequest request,
+                                         @RequestParam MultipartFile file){
+        User user = jwtUtils.getUserFromJWT(jwtUtils.getJwtFromHeader(request));
+        if (user.getId().equals(userId) || !user.getId().isBlank())
+            return userService.updateUserAvatar(userId, file);
+        throw new AppException(HttpStatus.FORBIDDEN.value(), "You don't have permission! Token is invalid");
     }
 
 }
