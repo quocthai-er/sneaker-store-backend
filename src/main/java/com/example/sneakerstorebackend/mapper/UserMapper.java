@@ -60,7 +60,7 @@ public class UserMapper {
             }
             return new User(registerRequest.getName(), registerRequest.getEmail(), registerRequest.getPassword(), registerRequest.getPhone(),
                     registerRequest.getProvince(), registerRequest.getDistrict(), registerRequest.getWard(),
-                    registerRequest.getAddress(), ConstantsConfig.ROLE_USER,
+                    registerRequest.getAddress(), ConstantsConfig.ROLE_USER, null,
                     gender, ConstantsConfig.USER_STATE_UNVERIFIED, EProvider.LOCAL);
         }
         return null;

@@ -82,7 +82,7 @@ public class User {
     @LastModifiedDate
     LocalDateTime lastModifiedDate;
 
-    public User(String name, String email, String password, String phone, Integer province, Integer district, Integer ward, String address, String role, EGender gender, String state, EProvider provider) {
+/*    public User(String name, String email, String password, String phone, Integer province, Integer district, Integer ward, String address, String role, EGender gender, String state, EProvider provider) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -95,7 +95,7 @@ public class User {
         this.gender = gender;
         this.state = state;
         this.provider = provider;
-    }
+    }*/
 
     public User(String name, String email, String password, String phone, Integer province, Integer district, Integer ward, String address, String role, String avatar, EGender gender, String state, EProvider provider) {
         this.name = name;
