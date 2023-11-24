@@ -7,6 +7,7 @@ import com.example.sneakerstorebackend.entity.order.Order;
 import com.example.sneakerstorebackend.repository.OrderRepository;
 import com.example.sneakerstorebackend.service.MailService;
 import com.example.sneakerstorebackend.service.PaymentFactory;
+import com.example.sneakerstorebackend.util.CancelMailUtils;
 import com.example.sneakerstorebackend.util.MailUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,9 @@ public class CODServiceImpl extends PaymentFactory {
     private final TaskScheduler taskScheduler;
     private final MailUtils mailUtils;
     private final MailService mailService;
+
+    private final CancelMailUtils cancelMailUtils;
+
 
     @Override
     @Transactional
@@ -57,5 +61,23 @@ public class CODServiceImpl extends PaymentFactory {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(true, "Confirmed order successfully", ""));
         } else throw new NotFoundException("Can not found order with id: "+ paymentId);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> cancelPayment(String id, String responseCode, HttpServletResponse response) {
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isPresent() && order.get().getState().equals(ConstantsConfig.ORDER_STATE_PENDING)) {
+            order.get().setState(ConstantsConfig.ORDER_STATE_CANCEL);
+            orderRepository.save(order.get());
+            String checkUpdateQuantityProduct = paymentUtils.checkingUpdateQuantityProduct(order.get(), false);
+            if (checkUpdateQuantityProduct == null) {
+                cancelMailUtils.setMailService(mailService);
+                cancelMailUtils.setOrder(order.get());
+                taskScheduler.schedule(cancelMailUtils, new Date(System.currentTimeMillis())) ;
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(true, "Cancel order successfully", ""));
+            }
+        } throw new NotFoundException("Can not found order with id: "+ id);
     }
 }

@@ -41,9 +41,11 @@ public class MailUtils implements Runnable {
         model.put("phone", order.getDeliveryDetail().getReceivePhone());
         model.put("address", order.getDeliveryDetail().getDeliveryInfo().getOrDefault("fullAddress", order.getDeliveryDetail().getReceiveAddress()));
         try {
-            model.put("expectedTime", LocalDate.ofInstant
+            /*model.put("expectedTime", LocalDate.ofInstant
                     (Instant.ofEpochMilli((Long) order.getDeliveryDetail().getDeliveryInfo().get("expectedDeliveryTime")*1000),
-                            TimeZone.getDefault().toZoneId()));
+                            TimeZone.getDefault().toZoneId()));*/
+            model.put("expectedTime", LocalDate.now().plusDays(5));
+
         } catch (Exception e) {
             model.put("expectedTime", LocalDate.now().plusDays(3));
         }
