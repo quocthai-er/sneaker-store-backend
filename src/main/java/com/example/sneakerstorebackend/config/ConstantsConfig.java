@@ -29,5 +29,7 @@ public class ConstantsConfig {
     public static final String ORDER_STATE_DONE = "done";
     public static final String PAYMENT_COD = "cod";
     public static final String PAYMENT_PAYPAL = "paypal";
+    public static final int PAYMENT_TIMEOUT = 10 * 60 * 1000;
+
     public static final String PAYMENT_VNPAY = "vnpay";
 }

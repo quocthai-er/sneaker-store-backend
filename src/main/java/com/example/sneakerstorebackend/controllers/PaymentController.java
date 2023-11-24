@@ -34,6 +34,8 @@ public class PaymentController {
                                         HttpServletRequest request,
                                         HttpServletResponse response) {
         switch (paymentType) {
+            case ConstantsConfig.PAYMENT_PAYPAL:
+                return paymentService.executePayment(paymentId,payerId,null,null, request, response);
             default:
                 return paymentService.executePayment(paymentId, null,null,null, request, response);
         }

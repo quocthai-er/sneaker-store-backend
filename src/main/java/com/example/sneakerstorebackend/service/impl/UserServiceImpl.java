@@ -180,9 +180,9 @@ public class UserServiceImpl implements UserService {
                     throw new AppException(HttpStatus.EXPECTATION_FAILED.value(), "Error when upload image");
                 }
             }
-            UserResponse res = userMapper.toUserRes(user.get());
+            UserResponse response = userMapper.toUserRes(user.get());
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(true, "Update user success", res));
+                    new ResponseObject(true, "Update user success", response));
         }
         throw new NotFoundException("Can not found user with id " + id );
     }

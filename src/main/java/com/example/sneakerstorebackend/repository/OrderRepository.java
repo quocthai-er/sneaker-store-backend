@@ -26,4 +26,7 @@ public interface OrderRepository extends MongoRepository<Order, String> {
 
     Optional<Order> findOrderByIdAndState(String orderId, String state);
 
+    Optional<Order> findOrderByPaymentDetail_PaymentTokenAndState(String token, String state);
+
+
 }
