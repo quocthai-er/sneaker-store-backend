@@ -42,6 +42,7 @@ import java.util.Optional;
 public class PaypalServiceImpl extends PaymentFactory {
     public static final String URL_PAYPAL_SUCCESS = "/api/checkout/paypal/success";
     public static final String URL_PAYPAL_CANCEL = "/api/checkout/paypal/cancel";
+
     public static final String PATTERN = "&token=";
 
     private APIContext apiContext;
@@ -124,6 +125,28 @@ public class PaypalServiceImpl extends PaymentFactory {
         response.sendRedirect(PaymentServiceImpl.CLIENT_REDIRECT + "false&cancel=false");
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
                 new ResponseObject(false, "Payment with Paypal failed", "")
+        );
+    }
+
+    @SneakyThrows
+    @Override
+    public ResponseEntity<?> cancelPayment(String id, String responseCode, HttpServletResponse response) {
+        Optional<Order> order = orderRepository.findOrderByPaymentDetail_PaymentTokenAndState(id,
+                ConstantsConfig.ORDER_STATE_PROCESS);
+        if (order.isPresent()) {
+            order.get().setState(ConstantsConfig.ORDER_STATE_CANCEL);
+            orderRepository.save(order.get());
+            String checkUpdateQuantityProduct = paymentUtils.checkingUpdateQuantityProduct(order.get(), false);
+            if (checkUpdateQuantityProduct == null) {
+                response.sendRedirect(PaymentServiceImpl.CLIENT_REDIRECT + "true&cancel=true");
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(true, "Cancel payment with Paypal complete", "")
+                );
+            }
+        }
+        response.sendRedirect(PaymentServiceImpl.CLIENT_REDIRECT + "false&cancel=true");
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                new ResponseObject(false, "Cancel payment with Paypal failed", "")
         );
     }
 

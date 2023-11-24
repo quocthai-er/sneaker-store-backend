@@ -11,4 +11,6 @@ public abstract class PaymentFactory {
 
     public abstract ResponseEntity<?> executePayment(String paymentId, String payerId, String responseCode, String id, HttpServletRequest request, HttpServletResponse response);
 
+    public abstract ResponseEntity<?> cancelPayment(String id, String responseCode, HttpServletResponse response);
+
 }

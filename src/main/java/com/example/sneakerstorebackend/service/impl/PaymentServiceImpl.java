@@ -110,6 +110,19 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+    @Override
+    public ResponseEntity<?> cancelPayment(String id, String responseCode, HttpServletRequest request, HttpServletResponse response) {
+        String check = id.split("-")[0];
+        if (check.equals("EC")) {
+            PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_PAYPAL);
+            return paymentFactory.cancelPayment(id, null, response);
+        }
+        else {
+            checkRoleForCODPayment(request);
+            PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_COD);
+            return paymentFactory.cancelPayment(id, null, response);
+        }    }
+
     private void checkRoleForCODPayment(HttpServletRequest request) {
         String userId = jwtTokenUtil.getUserFromJWT(jwtTokenUtil.getJwtFromHeader(request)).getId();
         Optional<User> user = userRepository.findUserByIdAndState(userId, ConstantsConfig.USER_STATE_ACTIVATED);
