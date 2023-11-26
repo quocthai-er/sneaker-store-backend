@@ -2,6 +2,7 @@ package com.example.sneakerstorebackend.entity.product;
 
 import com.example.sneakerstorebackend.entity.Brand;
 import com.example.sneakerstorebackend.entity.Category;
+import com.example.sneakerstorebackend.entity.Review;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -66,10 +67,10 @@ public class Product {
     @Indexed
     private List<ProductOption> productOptions;
     private List<ProductImage> images = new ArrayList<>();
-  /*  @ReadOnlyProperty
+    @ReadOnlyProperty
     @DocumentReference(lookup="{'product':?#{#self._id} }", lazy = true)
     @Indexed
-    private List<Review> reviews;*/
+    private List<Review> reviews;
     @CreatedDate
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     LocalDateTime createdDate;
@@ -94,12 +95,12 @@ public class Product {
         this.state = state;
     }
 
-/*    @Transient
+    @Transient
     public int getRateCount() {
         try {
             return reviews.size();
         } catch (Exception e) {
             return 0;
         }
-    }*/
+    }
 }
