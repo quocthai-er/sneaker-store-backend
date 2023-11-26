@@ -5,10 +5,12 @@ import com.example.sneakerstorebackend.domain.exception.AppException;
 import com.example.sneakerstorebackend.domain.exception.NotFoundException;
 import com.example.sneakerstorebackend.domain.payloads.request.ReviewRequest;
 import com.example.sneakerstorebackend.domain.payloads.response.ResponseObject;
+import com.example.sneakerstorebackend.domain.payloads.response.ReviewResponse;
 import com.example.sneakerstorebackend.entity.Review;
 import com.example.sneakerstorebackend.entity.order.OrderItem;
 import com.example.sneakerstorebackend.entity.product.Product;
 import com.example.sneakerstorebackend.entity.user.User;
+import com.example.sneakerstorebackend.mapper.ReviewMapper;
 import com.example.sneakerstorebackend.repository.OrderItemRepository;
 import com.example.sneakerstorebackend.repository.ProductRepository;
 import com.example.sneakerstorebackend.repository.ReviewRepository;
@@ -17,12 +19,18 @@ import com.example.sneakerstorebackend.service.ReviewService;
 import lombok.AllArgsConstructor;
 import lombok.Synchronized;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
 
-    //private final ReviewMapper reviewMapper;
+    private final ReviewMapper reviewMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -63,4 +71,17 @@ public class ReviewServiceImpl implements ReviewService {
                         new ResponseObject(true, "Add review success ", newReview));
             } throw new NotFoundException("Can not found order item or order item already reviewed with id: " + req.getOrderItemId());
         } throw new NotFoundException("Can not found user with id: " + userId);    }
+
+    @Override
+    public ResponseEntity<?> findByProductId(String productId, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAllByProduct_IdAndEnable(new ObjectId(productId) , true, pageable);
+        if (reviews.isEmpty()) throw new NotFoundException("Can not found any review");
+        List<ReviewResponse> resList = reviews.getContent().stream().map(reviewMapper::toReviewResponse).collect(Collectors.toList());
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("list", resList);
+        resp.put("totalQuantity", reviews.getTotalElements());
+        resp.put("totalPage", reviews.getTotalPages());
+        if (reviews.isEmpty()) throw new NotFoundException("Can not found any review");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(true, "Get review by product success ", resp));    }
 }
