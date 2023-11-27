@@ -48,7 +48,8 @@ public class ProductMapper {
                 .stripTrailingZeros().toPlainString();
         BigDecimal discountPrice = new BigDecimal(discountString);
         return new ProductListResponse(req.getId(), req.getName(), req.getDescription(),
-                req.getPrice().add(extra),discountPrice, req.getDiscount(), req.getCategory().getId(),
+                req.getPrice().add(extra),discountPrice, req.getDiscount(),req.getRate(),
+                req.getRateCount(), req.getCategory().getId(),
                 req.getCategory().getName(), req.getBrand().getId(),
                 req.getBrand().getName(), req.getState(), req.getCreatedDate(), req.getAttr(), images);
     }
@@ -58,7 +59,7 @@ public class ProductMapper {
                 .stripTrailingZeros().toPlainString();
         BigDecimal discountPrice = new BigDecimal(discountString);
         return new ProductResponse(req.getId(), req.getName(), req.getDescription(),
-                req.getPrice(),discountPrice, req.getDiscount(),
+                req.getPrice(),discountPrice, req.getDiscount(),req.getRate(), req.getRateCount(),
                 req.getCategory().getId(), req.getCategory().getName(),req.getBrand().getId(),
                 req.getBrand().getName(), req.getState(), req.getAttr(), req.getProductOptions(), req.getImages());
     }

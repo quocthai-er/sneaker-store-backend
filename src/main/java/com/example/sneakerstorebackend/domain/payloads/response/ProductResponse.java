@@ -22,8 +22,8 @@ public class ProductResponse {
     private BigDecimal price;
     private BigDecimal discountPrice;
     private int discount;
-/*    private double rate;
-    private int rateCount;*/
+    private double rate;
+    private int rateCount;
     private String category;
     private String categoryName;
     private String brand;
