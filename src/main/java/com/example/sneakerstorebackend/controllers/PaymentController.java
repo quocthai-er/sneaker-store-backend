@@ -36,6 +36,8 @@ public class PaymentController {
         switch (paymentType) {
             case ConstantsConfig.PAYMENT_PAYPAL:
                 return paymentService.executePayment(paymentId,payerId,null,null, request, response);
+            case ConstantsConfig.PAYMENT_VNPAY:
+                return paymentService.executePayment(null, null, responseCode,id, request, response);
             default:
                 return paymentService.executePayment(paymentId, null,null,null, request, response);
         }
