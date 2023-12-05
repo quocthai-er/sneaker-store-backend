@@ -43,12 +43,16 @@ public class PaymentServiceImpl implements PaymentService {
     private final JwtUtils jwtTokenUtil;
     private final UserRepository userRepository;
 
-    public static String CLIENT_REDIRECT = "http://localhost:3000/redirect/payment?success=";
+    //public static String CLIENT_REDIRECT = "http://localhost:3000/redirect/payment?success=";
+
+    public static String CLIENT_REDIRECT = "https://sneakershop-pi.vercel.app/redirect/payment?success=";
+
 
 
     public PaymentFactory getPaymentMethod(String methodName) {
         switch (methodName) {
             case ConstantsConfig.PAYMENT_PAYPAL: return context.getBean(PaypalServiceImpl.class);
+            case ConstantsConfig.PAYMENT_VNPAY: return context.getBean(VNPayServiceImpl.class);
             case ConstantsConfig.PAYMENT_COD: return context.getBean(CODServiceImpl.class);
             default: return null;
         }
