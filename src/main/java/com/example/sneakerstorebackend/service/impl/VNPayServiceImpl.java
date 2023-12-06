@@ -106,7 +106,7 @@ public class VNPayServiceImpl extends PaymentFactory {
         SimpleDateFormat formatter = new SimpleDateFormat(VNPayUtils.yyyyMMddHHmmss);
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put(VNPayUtils.vnp_CreateDate, vnp_CreateDate);
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.MINUTE, 590);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put(VNPayUtils.vnp_ExpireDate, vnp_ExpireDate);
 
