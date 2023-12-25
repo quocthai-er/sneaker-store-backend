@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-            if (user.getUser().getProvider().equals(EProvider.LOCAL)) {
+            if (user.getUser().getProvider().equals(EProvider.LOCAL) && user.getUser().getState().equals(ConstantsConfig.USER_STATE_ACTIVATED)) {
                 LoginResponse loginResponse = userMapper.toLoginRes(user.getUser());
 /*                if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
                     try {
@@ -123,8 +123,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> register(RegisterRequest request) {
+
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(HttpStatus.CONFLICT.value(), "Email already exists");
+
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = userMapper.toUser(request);
         if (user != null) {

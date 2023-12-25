@@ -14,7 +14,6 @@ public interface CategoryService {
     ResponseEntity<?> addCategory(CategoryRequest req);
     ResponseEntity<?> updateCategory(String id, CategoryRequest req);
     ResponseEntity<?> findAll();
-
     ResponseEntity<?> deactivatedCategory(String id);
 
 
