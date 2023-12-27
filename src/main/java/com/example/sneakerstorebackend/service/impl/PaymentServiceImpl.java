@@ -121,6 +121,9 @@ public class PaymentServiceImpl implements PaymentService {
             PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_PAYPAL);
             return paymentFactory.cancelPayment(id, null, response);
         }
+        else if (responseCode != null) {
+            PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_VNPAY);
+            return paymentFactory.cancelPayment(id, responseCode, response);}
         else {
             checkRoleForCODPayment(request);
             PaymentFactory paymentFactory = getPaymentMethod(ConstantsConfig.PAYMENT_COD);

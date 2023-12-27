@@ -82,7 +82,8 @@ public class AdminServiceImpl implements AdminService {
         Page<Order> orderList = orderRepository.findAllByCreatedDateBetweenAndState(fromDate, toDate, ConstantsConfig.ORDER_STATE_DONE, Pageable.unpaged());
         switch (type) {
             case "all":
-                orderList = orderRepository.findAllByState(ConstantsConfig.ORDER_STATE_DONE, PageRequest.of(0, Integer.MAX_VALUE, Sort.by("lastModifiedDate").ascending()));
+                //orderList = orderRepository.findAllByState(ConstantsConfig.ORDER_STATE_DONE, PageRequest.of(0, Integer.MAX_VALUE, Sort.by("lastModifiedDate").ascending()));
+                //orderList = orderRepository.findAllByState(ConstantsConfig.ORDER_STATE_DONE, PageRequest.of(0, Integer.MAX_VALUE, Sort.by("createdDate").ascending()));
                 pattern = "";
                 break;
             case "month":
@@ -107,7 +108,8 @@ public class AdminServiceImpl implements AdminService {
             OrdersSaleResponse ordersSaleResponse = new OrdersSaleResponse();
             int quantity = 1;
             for (int i = 0; i <= orderList.getSize() - 1; i++) {
-                String dateFormat = df.format(orderList.getContent().get(i).getLastModifiedDate());
+                //String dateFormat = df.format(orderList.getContent().get(i).getLastModifiedDate());
+                String dateFormat = df.format(orderList.getContent().get(i).getCreatedDate());
                 if (i == 0 || !ordersSaleResponse.getDate().equals(dateFormat)) {
                     if (i > 0) ordersSaleResList.add(ordersSaleResponse);
                     if (dateFormat.isBlank()) dateFormat = "all";
@@ -118,7 +120,7 @@ public class AdminServiceImpl implements AdminService {
                     ordersSaleResponse.setAmount(ordersSaleResponse.getAmount().add(orderList.getContent().get(i).getTotalPrice()));
                     ordersSaleResponse.setQuantity(quantity);
                 }
-                if (i == orderList.getSize() - 1) ordersSaleResList.add(ordersSaleResponse);
+                if (i == orderList.getSize()-1) ordersSaleResList.add(ordersSaleResponse);
             }
         }
         return ordersSaleResList;
