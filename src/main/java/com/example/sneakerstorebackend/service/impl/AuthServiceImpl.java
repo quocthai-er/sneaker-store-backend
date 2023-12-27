@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
             if (user.getUser().getProvider().equals(EProvider.LOCAL) && user.getUser().getState().equals(ConstantsConfig.USER_STATE_ACTIVATED)) {
                 LoginResponse loginResponse = userMapper.toLoginRes(user.getUser());
-/*                if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
+              if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
                     try {
                         loginResponse.setAccessToken(ConstantsConfig.USER_STATE_UNVERIFIED);
 
@@ -77,8 +77,8 @@ public class AuthServiceImpl implements AuthService {
                 } else {
                     String access_token = jwtUtils.generateTokenFromUserId(user.getUser());
                     loginResponse.setAccessToken(access_token);
-                }*/
-
+                }
+/*
                 if (user.getUser().getState().equals(ConstantsConfig.USER_STATE_UNVERIFIED)) {
                     try {
                         if (loginRequest.getOtp() == null || loginRequest.getOtp().isBlank()) { sendVerifyMail(user.getUser());
@@ -109,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
                     String access_token = jwtUtils.generateTokenFromUserId(user.getUser());
                     loginResponse.setAccessToken(access_token);
                 }
-
+*/
                 return ResponseEntity.status(HttpStatus.OK).body(
                         new ResponseObject(true, "Log in successfully ", loginResponse)
                 );
