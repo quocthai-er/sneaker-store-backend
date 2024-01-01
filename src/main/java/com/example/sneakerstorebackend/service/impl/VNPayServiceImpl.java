@@ -140,7 +140,7 @@ public class VNPayServiceImpl extends PaymentFactory {
             order.get().getPaymentDetail().getPaymentInfo().put("bankCode", request.getParameter("vnp_BankCode"));
             order.get().getPaymentDetail().getPaymentInfo().put("transactionNo", request.getParameter("vnp_TransactionNo"));
             order.get().getPaymentDetail().getPaymentInfo().put("isPaid", true);
-            order.get().setState(ConstantsConfig.ORDER_STATE_PREPARE);
+            order.get().setState(ConstantsConfig.ORDER_STATE_PENDING);
             orderRepository.save(order.get());
             mailUtils.setOrder(order.get());
             mailUtils.setMailService(mailService);

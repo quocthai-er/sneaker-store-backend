@@ -105,7 +105,7 @@ public class PaypalServiceImpl extends PaymentFactory {
                     order.get().getPaymentDetail().getPaymentInfo().put("payer", payment.getPayer().getPayerInfo());
                     order.get().getPaymentDetail().getPaymentInfo().put("paymentMethod", payment.getPayer().getPaymentMethod());
                     order.get().getPaymentDetail().getPaymentInfo().put("isPaid", true);
-                    order.get().setState(ConstantsConfig.ORDER_STATE_PREPARE);
+                    order.get().setState(ConstantsConfig.ORDER_STATE_PENDING);
                     orderRepository.save(order.get());
                     mailUtils.setOrder(order.get());
                     mailUtils.setMailService(mailService);
