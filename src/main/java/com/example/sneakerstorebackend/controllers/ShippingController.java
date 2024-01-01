@@ -29,8 +29,8 @@ public class ShippingController {
         return shippingAPIService.getService(req);
     }
 
-   /* @PostMapping(path = "/detail/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/detail/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getDetail (@PathVariable String orderId) {
         return shippingAPIService.getDetail(orderId);
-    }*/
+    }
 }
